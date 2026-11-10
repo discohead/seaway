@@ -1,0 +1,11 @@
+node_modules/
+__pycache__/
+.pytest_cache/
+.archil-local/
+*.egg-info/
+interop/out/
+dist/
+.DS_Store
+
+# the essay this code accompanies is kept out of the repository
+the-programmable-archil.md

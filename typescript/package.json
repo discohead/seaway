@@ -1,0 +1,36 @@
+{
+  "name": "seaway",
+  "version": "0.1.0",
+  "description": "Prototype: define the context an agent needs on Archil, then run priced, scoped statements against it.",
+  "private": true,
+  "license": "UNLICENSED",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "types": "./src/index.ts",
+  "files": [
+    "src",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=22.19"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "node --test test/*.test.ts"
+  },
+  "peerDependencies": {
+    "disk": ">=1.12.0"
+  },
+  "peerDependenciesMeta": {
+    "disk": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "disk": "^1.12.0",
+    "typescript": "^7.0.2"
+  }
+}
