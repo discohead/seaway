@@ -117,9 +117,8 @@ Everything the framework keeps is a plain file on the disk it concerns, so eithe
 
 ## What it is not
 
-- **Not an Archil product.** It is an unofficial proposal, written against Archil's public API.
+- **Not an Archil product.** It is an unofficial proposal, written against Archil's public API. It is open source under the [MIT licence](https://github.com/discohead/seaway/blob/main/LICENSE), as Archil's official SDKs are.
 - **Not on a package registry.** You install it from a checkout or from GitHub. See [Installation](/start/installation/).
-- **Not licensed yet.** The repository does not carry a licence.
 - **Not finished.** There are no services or sandboxes, no server-side planner, no caching by plan hash and no command-line tool. [Status and known limits](/architecture/status/) is the full list.
 
 ## Next

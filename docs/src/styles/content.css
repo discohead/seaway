@@ -578,6 +578,12 @@ code-tabs .expressive-code .frame pre {
 	color: var(--sl-color-white);
 }
 
+/* A link inside the sentence, as opposed to the row of links beside it, is marked as one. */
+.sw-foot p a {
+	text-decoration: underline;
+	text-underline-offset: 0.2em;
+}
+
 /* -- small pieces used inside pages --------------------------------------------------------- */
 
 /* A row of facts under a heading: what a blueprint mounts, what a page assumes. */

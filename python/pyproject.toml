@@ -3,6 +3,8 @@ name = "seaway"
 version = "0.1.0"
 description = "Prototype: define the context an agent needs on Archil, then run priced, scoped statements against it."
 readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
 requires-python = ">=3.10"
 dependencies = []
 

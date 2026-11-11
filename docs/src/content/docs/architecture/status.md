@@ -5,7 +5,7 @@ sidebar:
   label: Status and limits
 ---
 
-seaway is an unofficial prototype of a proposal, at version 0.1.0. This page says plainly what is real.
+seaway is an unofficial prototype of a proposal, at version 0.1.0, released under the [MIT licence](https://github.com/discohead/seaway/blob/main/LICENSE). This page says plainly what is real.
 
 ## It runs today
 
@@ -79,7 +79,6 @@ And what the SDKs now do about it:
 
 ## Not there yet
 
-- **A licence.** The repository does not carry one yet.
 - **Packages on a registry.** seaway is not on PyPI or npm. It installs [from GitHub or from a checkout](/start/installation/).
 
 ## Where to report something

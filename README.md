@@ -390,4 +390,4 @@ Then run `/seaway:setup` in a session. The MCP server loads the TypeScript SDK f
 | Every file the framework writes | [files on disk](plugins/seaway/skills/sdk/references/files-on-disk.md) |
 | Working on seaway itself | [CONTRIBUTING.md](CONTRIBUTING.md) |
 
-seaway is an unofficial proposal. The repository does not carry a licence yet.
+seaway is an unofficial proposal. It is released under the [MIT licence](LICENSE), as Archil's official SDKs are.

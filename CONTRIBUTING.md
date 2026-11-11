@@ -202,4 +202,4 @@ A fenced block marked `python` or `ts` on a page is run as written, the TypeScri
 
 Open an issue or a pull request at [github.com/discohead/seaway](https://github.com/discohead/seaway). Say what changed in behaviour, and whether it touches a plan, an error code or a file on disk. A pull request is ready when the Python tests, the TypeScript tests and typecheck, the interop check, the plugin's tests and the docs' checks all pass, and the fixture's diff shows only what you meant.
 
-The repository does not carry a licence yet.
+seaway is released under the [MIT licence](LICENSE). Each thing that is installed on its own carries a copy (`python/`, `typescript/`, `plugins/seaway/`), so keep the four files the same.

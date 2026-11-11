@@ -125,4 +125,4 @@ Open an issue or a pull request at [github.com/discohead/seaway](https://github.
 
 A pull request is ready when the Python tests, the TypeScript tests and typecheck, the interop check, the plugin's tests and the docs' checks all pass, and the fixture's diff shows only what you meant.
 
-The repository does not carry a licence yet.
+seaway is released under the [MIT licence](https://github.com/discohead/seaway/blob/main/LICENSE).

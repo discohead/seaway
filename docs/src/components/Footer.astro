@@ -27,7 +27,10 @@ const isHome = Boolean(Astro.locals.starlightRoute.entry.data.hero);
 	}
 	<CodeTabs />
 	<div class="sw-foot not-content">
-		<p>seaway is an unofficial prototype. It is not an Archil product, and the repository does not carry a licence yet.</p>
+		<p>
+			seaway is an unofficial prototype, and not an Archil product. Released under the{' '}
+			<a href={`${REPO_URL}/blob/main/LICENSE`}>MIT licence</a>.
+		</p>
 		<nav aria-label="Site">
 			<a href={REPO_URL}>GitHub</a>
 			<a href={withBase('/llms.txt')}>llms.txt</a>

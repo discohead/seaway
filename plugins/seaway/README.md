@@ -201,4 +201,7 @@ Every run is a real model call on your account. `--no-publish` keeps the report 
 - The MCP server runs on the TypeScript SDK only. A project that uses only the Python SDK still gets the skills, the agents, the linter and the hooks.
 - The linter does not parse. It misses what is spread across variables, and it cannot tell that a path given as a plain string should have been `ctx.path`. That is what the reviewer agent is for.
 - The MCP server does not sync recipes, fork or lock a context. Those need code, or are permanent on Archil, and are left to a program.
-- Nothing here has a licence of its own. The repository does not carry one yet, so the plugin cannot be listed in a plugin directory as it stands.
+
+## Licence
+
+MIT, like the rest of the repository and like Archil's official SDKs. See [LICENSE](LICENSE).

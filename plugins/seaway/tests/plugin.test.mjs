@@ -47,8 +47,11 @@ test("the manifest names the plugin and nothing it should not", () => {
   assert.ok(manifest.description.length > 60);
   assert.deepEqual(Object.keys(manifest.author), ["name"]); // no address is published with the plugin
   for (const key of Object.keys(manifest)) {
-    assert.ok(["name", "displayName", "version", "description", "author", "repository", "keywords", "userConfig"].includes(key), key);
+    assert.ok(["name", "displayName", "version", "description", "author", "repository", "license", "keywords", "userConfig"].includes(key), key);
   }
+  // the licence the manifest names is the one the plugin carries
+  assert.equal(manifest.license, "MIT");
+  assert.match(read("LICENSE"), /^MIT License\n/);
   assert.match(read("CHANGELOG.md"), new RegExp(`^## ${manifest.version.replaceAll(".", "\\.")}$`, "m"));
 });
 
