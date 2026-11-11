@@ -1,0 +1,8 @@
+#!/bin/sh
+# seaway-doctor: what this machine and this project would do with seaway. See scripts/doctor.mjs.
+here="$(cd "$(dirname "$0")" && pwd)"
+if ! command -v node >/dev/null 2>&1; then
+  echo "seaway doctor: Node is not on the PATH, so there is nothing to examine with. The TypeScript SDK and this plugin's scripts need Node 22.19 or later."
+  exit 0
+fi
+exec node "$here/../scripts/doctor.mjs" "$@"

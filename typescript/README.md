@@ -1,6 +1,6 @@
 # seaway (TypeScript)
 
-The TypeScript SDK. It is a port of the Python reference with the same semantics and the same files on disk. See the [README one level up](../README.md) for what this is and [The Programmable Archil](../the-programmable-archil.md) for why.
+The TypeScript SDK. It is a port of the Python reference with the same semantics and the same files on disk. See the [README one level up](../README.md) for what this is and why, and [CONTRIBUTING.md](../CONTRIBUTING.md) to work on it.
 
 ```bash
 npm install                             # Node 22.19+, which runs .ts directly; there is no build step

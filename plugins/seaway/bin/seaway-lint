@@ -1,0 +1,8 @@
+#!/bin/sh
+# seaway-lint: read code that uses seaway for the mistakes that are cheap to find. See scripts/lint.mjs.
+here="$(cd "$(dirname "$0")" && pwd)"
+if ! command -v node >/dev/null 2>&1; then
+  echo "seaway-lint needs Node on the PATH" >&2
+  exit 2
+fi
+exec node "$here/../scripts/lint.mjs" "$@"

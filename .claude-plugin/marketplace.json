@@ -1,0 +1,15 @@
+{
+  "$schema": "https://code.claude.com/schemas/marketplace.json",
+  "name": "seaway",
+  "description": "Claude Code plugins for seaway, a framework for Archil.",
+  "owner": {
+    "name": "Jared McFarland"
+  },
+  "plugins": [
+    {
+      "name": "seaway",
+      "source": "./plugins/seaway",
+      "description": "Work with seaway, a framework for Archil: skills for both SDKs, review and porting agents, a linter, hooks, and an MCP server that opens a context as tools."
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 # seaway (Python)
 
-The Python SDK, and the reference implementation. See the [README one level up](../README.md) for what this is and [The Programmable Archil](../the-programmable-archil.md) for why.
+The Python SDK, and the reference implementation. See the [README one level up](../README.md) for what this is and why, and [CONTRIBUTING.md](../CONTRIBUTING.md) to work on it.
 
 ```bash
 pip install -e '.[dev]'                 # Python 3.10+; the package has no runtime dependencies

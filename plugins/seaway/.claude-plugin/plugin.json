@@ -1,0 +1,63 @@
+{
+  "name": "seaway",
+  "displayName": "seaway",
+  "version": "0.1.0",
+  "description": "Work with seaway, a framework for Archil: compose the context an agent needs, then run statements that say what they touch, explain themselves before they run, and are priced. Skills for both SDKs, review and porting agents, a linter, and an MCP server that opens a context as tools.",
+  "author": {
+    "name": "Jared McFarland"
+  },
+  "repository": "https://github.com/discohead/seaway",
+  "keywords": [
+    "seaway",
+    "archil",
+    "agents",
+    "context",
+    "storage",
+    "transactions",
+    "observability",
+    "duckdb",
+    "mcp"
+  ],
+  "userConfig": {
+    "sdk_path": {
+      "type": "directory",
+      "title": "seaway checkout",
+      "description": "A checkout of the seaway repository, for the MCP server to load the SDK from. Leave empty when Claude Code runs inside a checkout, or in a project that installed seaway.",
+      "default": ""
+    },
+    "manifest": {
+      "type": "file",
+      "title": "Context manifest",
+      "description": "A context manifest for the MCP server to open on first use, as a path relative to the project. Leave empty to open contexts with the open_context tool.",
+      "default": ""
+    },
+    "backend": {
+      "type": "string",
+      "title": "Backend",
+      "description": "Where the MCP server opens contexts when a call does not say. \"local\" keeps everything on this machine; \"archil\" is the live account, and bills.",
+      "options": [
+        "local",
+        "archil"
+      ],
+      "default": "local"
+    },
+    "max_usd": {
+      "type": "string",
+      "title": "Session budget (USD)",
+      "description": "The most one MCP session may spend, by the plans' estimates. A statement that would pass it is refused before it runs. \"none\" lifts the ceiling.",
+      "default": "0.25"
+    },
+    "confirm_live_runs": {
+      "type": "boolean",
+      "title": "Ask before live runs",
+      "description": "Ask before Claude acts on the live Archil account: before a command that passes --archil, and before the MCP server opens a context there. Such a run bills per call and can create disks.",
+      "default": true
+    },
+    "lint_on_edit": {
+      "type": "boolean",
+      "title": "Lint on edit",
+      "description": "After an edit to a file that imports seaway, tell Claude what seaway-lint found in it.",
+      "default": true
+    }
+  }
+}

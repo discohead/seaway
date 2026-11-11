@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "context": {
+      "command": "node",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/servers/context-server.mjs"],
+      "env": {
+        "SEAWAY_SDK": "${user_config.sdk_path}",
+        "SEAWAY_MANIFEST": "${user_config.manifest}",
+        "SEAWAY_MCP_BACKEND": "${user_config.backend}",
+        "SEAWAY_MCP_MAX_USD": "${user_config.max_usd}"
+      }
+    }
+  }
+}
