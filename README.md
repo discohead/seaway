@@ -2,6 +2,8 @@
 
 **The layer in front of `exec`: a framework for [Archil](https://archil.com).**
 
+**[Documentation](https://discohead.github.io/seaway/)** · [Quickstart](https://discohead.github.io/seaway/start/quickstart/) · [API reference](https://discohead.github.io/seaway/reference/) · [Blueprints](https://discohead.github.io/seaway/blueprints/) · [llms.txt](https://discohead.github.io/seaway/llms.txt)
+
 Define the context an agent needs. Then run statements against it that say what they touch, explain themselves before they run, and carry a price from Archil's public price sheet.
 
 > "…start thinking very hard about how we start to represent Archil, as a framework, that can be used to programmatically define and interact with the context that agents need."
@@ -378,6 +380,8 @@ Then run `/seaway:setup` in a session. The MCP server loads the TypeScript SDK f
 
 | For | Read |
 |---|---|
+| Guides, the API reference, blueprints and the architecture, with every example run in both languages | [the docs](https://discohead.github.io/seaway/) |
+| The same docs for a model: one index, or one file | [llms.txt](https://discohead.github.io/seaway/llms.txt), [llms-full.txt](https://discohead.github.io/seaway/llms-full.txt) |
 | The Python SDK, the reference | [python/](python/README.md) |
 | The TypeScript SDK | [typescript/](typescript/README.md) |
 | The API in both languages, part by part | [plugins/seaway/skills/sdk/](plugins/seaway/skills/sdk/SKILL.md) and its [references](plugins/seaway/skills/sdk/references/) |

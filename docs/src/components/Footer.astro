@@ -1,0 +1,56 @@
+---
+/**
+ * Starlight's footer (edit link, last updated, previous and next), then one line that is on
+ * every page: what seaway is not, and where the machine-readable docs are.
+ */
+import EditLink from '@astrojs/starlight/components/EditLink.astro';
+import LastUpdated from '@astrojs/starlight/components/LastUpdated.astro';
+import Pagination from '@astrojs/starlight/components/Pagination.astro';
+
+import { REPO_URL, withBase } from '../site.mjs';
+import CodeTabs from './CodeTabs.astro';
+
+const isHome = Boolean(Astro.locals.starlightRoute.entry.data.hero);
+---
+
+<footer class="sl-flex">
+	{
+		!isHome && (
+			<>
+				<div class="meta sl-flex">
+					<EditLink />
+					<LastUpdated />
+				</div>
+				<Pagination />
+			</>
+		)
+	}
+	<CodeTabs />
+	<div class="sw-foot not-content">
+		<p>seaway is an unofficial prototype. It is not an Archil product, and the repository does not carry a licence yet.</p>
+		<nav aria-label="Site">
+			<a href={REPO_URL}>GitHub</a>
+			<a href={withBase('/llms.txt')}>llms.txt</a>
+			<a href={withBase('/llms-full.txt')}>llms-full.txt</a>
+			<a href="https://archil.com">Archil</a>
+		</nav>
+	</div>
+</footer>
+
+<style>
+	footer {
+		flex-direction: column;
+		gap: 1.5rem;
+	}
+	.meta {
+		gap: 0.75rem 3rem;
+		justify-content: space-between;
+		flex-wrap: wrap;
+		margin-top: 3rem;
+		font-size: var(--sl-text-sm);
+		color: var(--sl-color-gray-3);
+	}
+	.meta > :global(p:only-child) {
+		margin-inline-start: auto;
+	}
+</style>

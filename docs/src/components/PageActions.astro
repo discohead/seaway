@@ -1,0 +1,233 @@
+---
+/**
+ * The page menu: copy this page as Markdown, read it as Markdown, or open it in a model.
+ *
+ * Every page has a Markdown twin at `<page>/index.md`. The menu is how a person gets at it
+ * without knowing that. The links that open another tool carry a short prompt that names the
+ * twin, so the tool reads the page itself and not a rendering of it.
+ */
+import { absolute, markdownPath, withBase } from '../site.mjs';
+
+const { entry, id } = Astro.locals.starlightRoute;
+// The copy and the "view" link stay on this origin, so they work on a preview too.
+// The prompts name the published page: that is the one a model can fetch.
+const markdownHref = withBase(markdownPath(id || 'index'));
+const markdownUrl = absolute(markdownPath(id || 'index'));
+const indexUrl = absolute('/llms.txt');
+const title = entry.data.title;
+
+const ask = `Read ${markdownUrl} so I can ask questions about it.`;
+const build =
+	`Read ${markdownUrl} ("${title}", from the seaway docs). ` +
+	`seaway is new and is not in your training data, so treat that page as the reference, ` +
+	`and ${indexUrl} as the index of the rest. Then help me with this: `;
+
+const q = encodeURIComponent;
+const tools = [
+	{
+		id: 'claude',
+		label: 'Open in Claude',
+		hint: 'Ask questions about this page',
+		href: `https://claude.ai/new?q=${q(ask)}`,
+		icon: 'chat',
+	},
+	{
+		id: 'chatgpt',
+		label: 'Open in ChatGPT',
+		hint: 'Ask questions about this page',
+		href: `https://chatgpt.com/?q=${q(ask)}`,
+		icon: 'chat',
+	},
+	{
+		id: 'claude-code',
+		label: 'Open in Claude Code',
+		hint: 'Start a session that has read it',
+		href: `claude-cli://open?q=${q(build)}`,
+		icon: 'terminal',
+	},
+	{
+		id: 'codex',
+		label: 'Open in Codex',
+		hint: 'Start a thread that has read it',
+		href: `codex://threads/new?prompt=${q(build)}`,
+		icon: 'terminal',
+	},
+	{
+		id: 'cursor',
+		label: 'Open in Cursor',
+		hint: 'Start a chat that has read it',
+		href: `https://cursor.com/link/prompt?text=${q(build)}`,
+		icon: 'pointer',
+	},
+];
+
+const icons: Record<string, string> = {
+	copy: '<rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M15 9V6.5A2.5 2.5 0 0 0 12.5 4h-6A2.5 2.5 0 0 0 4 6.5v6A2.5 2.5 0 0 0 6.5 15H9"/>',
+	check: '<path d="m5 12.5 4.5 4.5L19 7.5"/>',
+	chevron: '<path d="m6 9 6 6 6-6"/>',
+	markdown: '<rect x="3" y="5.5" width="18" height="13" rx="2.5"/><path d="M7 15V9.5l2.5 3 2.5-3V15M15.5 9.5V15m0 0-2-2.2m2 2.2 2-2.2"/>',
+	chat: '<path d="M20 12.2c0 3.7-3.6 6.7-8 6.7-1 0-2-.15-2.9-.45L4.5 20l1.1-3.7C4.6 15.2 4 13.8 4 12.2c0-3.7 3.6-6.7 8-6.7s8 3 8 6.7Z"/>',
+	terminal: '<rect x="3" y="4.5" width="18" height="15" rx="2.5"/><path d="m7.5 9.5 3 2.5-3 2.5M13 15h3.5"/>',
+	pointer: '<path d="m5.5 4.5 13.5 5.2-5.7 2.3-2.3 5.7z"/>',
+	out: '<path d="M8 16 16.5 7.5M9.5 7.5h7v7"/>',
+};
+---
+
+<page-actions class="sw-actions not-content" data-markdown={markdownHref}>
+	<div class="sw-actions__group">
+		<button type="button" class="sw-actions__copy" data-copy data-state="idle">
+			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-icon="copy" set:html={icons.copy} />
+			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-icon="check" set:html={icons.check} />
+			<span data-label>Copy page</span>
+		</button>
+		<button
+			type="button"
+			class="sw-actions__toggle"
+			aria-haspopup="menu"
+			aria-expanded="false"
+			aria-controls="sw-page-menu"
+			aria-label="More ways to use this page"
+			data-toggle
+		>
+			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={icons.chevron} />
+		</button>
+	</div>
+
+	<ul id="sw-page-menu" class="sw-actions__menu" role="menu" aria-label="Use this page" hidden>
+		<li role="none">
+			<button type="button" class="sw-actions__item" role="menuitem" data-copy>
+				<span class="sw-actions__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={icons.copy} /></span>
+				<span class="sw-actions__label">Copy page</span>
+				<span class="sw-actions__hint">As Markdown, ready to paste into a model</span>
+			</button>
+		</li>
+		<li role="none">
+			<a class="sw-actions__item" role="menuitem" href={markdownHref} target="_blank" rel="noopener">
+				<span class="sw-actions__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={icons.markdown} /></span>
+				<span class="sw-actions__label">View as Markdown</span>
+				<span class="sw-actions__hint">This page as plain text</span>
+				<svg class="sw-actions__out" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={icons.out} />
+			</a>
+		</li>
+		{
+			tools.map((tool, i) => (
+				<li role="none" class:list={{ 'sw-actions__rule': i === 0 }}>
+					<a class="sw-actions__item" role="menuitem" href={tool.href} target="_blank" rel="noopener" data-tool={tool.id}>
+						<span class="sw-actions__icon">
+							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={icons[tool.icon]} />
+						</span>
+						<span class="sw-actions__label">{tool.label}</span>
+						<span class="sw-actions__hint">{tool.hint}</span>
+						<svg class="sw-actions__out" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={icons.out} />
+					</a>
+				</li>
+			))
+		}
+	</ul>
+</page-actions>
+
+<script>
+	class PageActions extends HTMLElement {
+		#menu = this.querySelector<HTMLElement>('[role="menu"]')!;
+		#toggle = this.querySelector<HTMLButtonElement>('[data-toggle]')!;
+		#button = this.querySelector<HTMLButtonElement>('.sw-actions__copy')!;
+		#timer = 0;
+
+		connectedCallback() {
+			this.#toggle.addEventListener('click', () => this.#open(Boolean(this.#menu.hidden)));
+			for (const el of this.querySelectorAll<HTMLElement>('[data-copy]')) {
+				el.addEventListener('click', () => void this.#copy());
+			}
+			for (const el of this.#items()) {
+				if (el instanceof HTMLAnchorElement) el.addEventListener('click', () => this.#open(false));
+			}
+			this.addEventListener('keydown', (event) => this.#key(event));
+			document.addEventListener('pointerdown', (event) => {
+				if (!this.#menu.hidden && !this.contains(event.target as Node)) this.#open(false);
+			});
+			this.addEventListener('focusout', (event) => {
+				const next = (event as FocusEvent).relatedTarget as Node | null;
+				if (next && !this.contains(next)) this.#open(false);
+			});
+		}
+
+		#items(): HTMLElement[] {
+			return [...this.#menu.querySelectorAll<HTMLElement>('[role="menuitem"]')];
+		}
+
+		#open(open: boolean, focus = false) {
+			this.#menu.hidden = !open;
+			this.#toggle.setAttribute('aria-expanded', String(open));
+			if (open) this.#keepInView();
+			if (open && focus) this.#items()[0]?.focus();
+		}
+
+		/** The menu opens from one edge of its button. Where that would run off the screen, slide it back on. */
+		#keepInView() {
+			const gutter = 12;
+			this.#menu.style.translate = '';
+			const box = this.#menu.getBoundingClientRect();
+			const room = document.documentElement.clientWidth;
+			const over = box.right - (room - gutter);
+			const shift = over > 0 ? -over : box.left < gutter ? gutter - box.left : 0;
+			if (shift) this.#menu.style.translate = `${Math.round(shift)}px 0`;
+		}
+
+		#key(event: KeyboardEvent) {
+			const items = this.#items();
+			const at = items.indexOf(document.activeElement as HTMLElement);
+			if (event.key === 'Escape' && !this.#menu.hidden) {
+				event.preventDefault();
+				this.#open(false);
+				this.#toggle.focus();
+			} else if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+				if (this.#menu.hidden) {
+					if (document.activeElement !== this.#toggle) return;
+					this.#open(true);
+				}
+				event.preventDefault();
+				const step = event.key === 'ArrowDown' ? 1 : -1;
+				items[(at + step + items.length) % items.length]?.focus();
+			} else if ((event.key === 'Home' || event.key === 'End') && at !== -1) {
+				event.preventDefault();
+				items[event.key === 'Home' ? 0 : items.length - 1]?.focus();
+			}
+		}
+
+		/** The page's Markdown, fetched from its twin. A clipboard write has to start inside the click, so the text is handed over as a promise. */
+		async #copy() {
+			const url = this.dataset.markdown!;
+			const text = fetch(url).then((response) => {
+				if (!response.ok) throw new Error(`${response.status} for ${url}`);
+				return response.text();
+			});
+			try {
+				if (typeof ClipboardItem !== 'undefined' && navigator.clipboard?.write) {
+					const blob = text.then((body) => new Blob([body], { type: 'text/plain' }));
+					await navigator.clipboard.write([new ClipboardItem({ 'text/plain': blob })]);
+				} else {
+					await navigator.clipboard.writeText(await text);
+				}
+				this.#show('copied', 'Copied');
+			} catch (error) {
+				console.error('Copy page failed:', error);
+				this.#show('failed', 'Copy failed');
+			}
+			this.#open(false);
+		}
+
+		#show(state: 'copied' | 'failed', label: string) {
+			// Which icon shows follows data-state, in the stylesheet.
+			const text = this.#button.querySelector<HTMLElement>('[data-label]')!;
+			this.#button.dataset.state = state;
+			text.textContent = label;
+			window.clearTimeout(this.#timer);
+			this.#timer = window.setTimeout(() => {
+				this.#button.dataset.state = 'idle';
+				text.textContent = 'Copy page';
+			}, 2000);
+		}
+	}
+
+	customElements.define('page-actions', PageActions);
+</script>

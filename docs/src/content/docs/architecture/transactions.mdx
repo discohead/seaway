@@ -1,0 +1,95 @@
+---
+title: How turns work
+description: A turn is a checkpoint and a branch per written disk, and a commit that validates before it copies. What each step does, why the order matters, and the window a native merge would close.
+---
+
+import TurnTimeline from '../../../components/diagrams/TurnTimeline.astro';
+
+Archil provides the two expensive parts of a transaction natively: checkpoints and branches are copy-on-write and take milliseconds at any size. It does not yet merge a branch back. So seaway does the validation and the copy itself, and this page is how.
+
+<TurnTimeline />
+
+The semantics are snapshot isolation over files. The first committer wins, at the granularity of a path.
+
+## Begin
+
+For each disk the turn may write:
+
+1. **List the main line first.** The paths the turn may write are listed, with each file's size and [version](/architecture/versions/). Under `serializable` isolation, so are the paths it declared as reads.
+2. **Checkpoint the disk,** as `<turn id>-base`.
+3. **Branch from that checkpoint,** as `<turn id>`.
+4. **List the whole branch.** This is what the turn's changes will be measured against.
+
+The order matters. The listing is taken before the checkpoint, so a write that lands between the two is in the turn's snapshot and not in the listing. At commit the turn will see that path as changed on the main line and report a conflict. That is a needless abort at worst, and never a lost update.
+
+The turn then works in a context whose written mounts point at the branches. Every other mount is the same disk as before.
+
+## Work
+
+Every verb on the turn's context acts on the branch: `write`, `sh`, `sql`, `sync`, all of them. A statement compiles as it always does, with the branch's handle in its mount map where the disk's would be.
+
+Nothing the turn does is visible to anyone else. Disks the turn only reads are read live.
+
+## Commit
+
+1. **Find what changed.** The branch is listed again and compared with its starting listing. A path whose size or version differs was written. A path that is gone was deleted. This is a comparison of metadata: no data is read.
+2. **Refuse undeclared writes.** If the turn named its `writes`, a changed path outside them ends the turn with `undeclared_write`. Nothing is applied.
+3. **Validate, on every disk, before applying to any.** The main line is listed now and compared with the listing taken at the start. If any path the turn changed has a different size or version on the main line, the commit raises `Conflict` with every such path. Under `serializable`, a change to anything under the declared reads conflicts too.
+4. **Apply.** For each disk that changed, the change list is written to the branch as `.px/tx/<turn id>.changes`. Then one call mounts the branch read-only and the main line read-write, and copies each written path across, or removes each deleted one.
+
+An empty turn commits without a call.
+
+### How the copy is made
+
+Each file is copied to a temporary name beside its target and then renamed over it, so a reader of one file never sees it half-written.
+
+The main line is mounted in the disk's own mode for the copy:
+
+- **An `owned` disk commits under its checkout.** No other writer can interleave with the copy.
+- **A `shared` disk has no checkout to take.** Its commit is optimistic.
+
+## What is and is not atomic
+
+| | Is it atomic? |
+|---|---|
+| The decision to commit | yes: every disk is validated before any is touched, and a conflict applies nothing |
+| One file | yes: it is renamed into place |
+| The files of one turn | **no**: the copy is file by file |
+| Validate, then copy | on the local backend, yes, for turns that share one backend object: a lock makes them one step. On Archil, **no**: there is a window between them |
+
+If the copy fails part-way, some paths have been applied. The commit raises `commit_failed`, and the branch still holds the whole turn, with its change list on it.
+
+Two processes on the same local root are not serialised against each other. The lock is in the backend object, not on the disk.
+
+## What it costs
+
+| Step | Calls |
+|---|---|
+| begin | one checkpoint per disk the turn may write. On Archil a checkpoint is an exec: a billed call, and about a fifth of a second |
+| work | whatever its statements cost |
+| commit | one call per disk that changed |
+| rollback | none: nothing was ever written to the main line |
+
+Every turn leaves a checkpoint and a branch on each disk it could write. Archil cannot delete either except by deleting the disk.
+
+## Coarse versions
+
+On Archil a file's version carries its modification time in whole seconds. A file rewritten in place, at the same size, within the same second keeps its version, and a commit would not see the change.
+
+So a turn does not take its snapshot until the newest file it listed is older than that. A turn that begins within about a second and a half of a write waits out the difference. Usually there is no wait. [Versions and clocks](/architecture/versions/) has the detail.
+
+## What a native merge would change
+
+For a turn, one side of the merge is small and already known. So the primitive does not have to be a tree merge. It can be:
+
+> Apply this branch's changes to its parent if none of these paths have changed on the parent since this checkpoint. Otherwise say which ones did.
+
+With that one conditional apply, the commit would be atomic across files, the window on Archil would close, and the change list would no longer need a listing comparison. With a REST call for checkpoints and a way to delete branches, a turn would cost less and leave nothing behind. It is the third of the [six things seaway asks of the platform](/architecture/platform/).
+
+## Next
+
+:::cards
+- [Turns](/guides/turns/) How to use one, and what is not part of it.
+- [Versions and clocks](/architecture/versions/) What "changed" means on each backend.
+- [What the framework writes](/architecture/files-on-disk/) The change list a commit leaves on the branch.
+:::

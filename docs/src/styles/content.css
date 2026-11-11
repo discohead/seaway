@@ -1,0 +1,689 @@
+/*
+ * The page itself: headings, prose, tables, code, asides and tabs.
+ */
+
+/* -- headings ------------------------------------------------------------------------------- */
+
+.sl-markdown-content :is(h1, h2, h3, h4, h5, h6) {
+	letter-spacing: -0.018em;
+	font-weight: 600;
+	text-wrap: balance;
+}
+
+.sl-markdown-content :is(h2):not(:where(.not-content *)) {
+	margin-top: 2.75rem;
+}
+
+.sl-markdown-content :is(h3):not(:where(.not-content *)) {
+	margin-top: 2.1rem;
+}
+
+.sl-markdown-content :is(h4):not(:where(.not-content *)) {
+	margin-top: 1.75rem;
+	color: var(--sl-color-gray-1);
+}
+
+/* The anchor beside a heading stays out of the way until the heading is hovered. */
+.sl-markdown-content .sl-anchor-link {
+	color: var(--sl-color-gray-4);
+}
+
+.sl-markdown-content .sl-anchor-link:hover,
+.sl-markdown-content .sl-anchor-link:focus {
+	color: var(--sl-color-text-accent);
+}
+
+/* -- prose ---------------------------------------------------------------------------------- */
+
+.sl-markdown-content {
+	font-size: 1rem;
+	color: var(--sl-color-gray-2);
+}
+
+.sl-markdown-content :is(p, li) {
+	text-wrap: pretty;
+}
+
+.sl-markdown-content :is(strong, b) {
+	font-weight: 600;
+	color: var(--sl-color-white);
+}
+
+.sl-markdown-content a:not(:where(.not-content *, .sl-anchor-link, .sl-link-button)) {
+	color: var(--sl-color-text-accent);
+	font-weight: 500;
+	text-decoration-line: underline;
+	text-decoration-thickness: 1px;
+	text-underline-offset: 0.2em;
+	text-decoration-color: color-mix(in srgb, currentColor 35%, transparent);
+	transition: text-decoration-color 0.15s;
+}
+
+.sl-markdown-content a:not(:where(.not-content *, .sl-anchor-link, .sl-link-button)):hover {
+	color: var(--sl-color-text-accent);
+	text-decoration-color: currentColor;
+}
+
+.sl-markdown-content li::marker {
+	color: var(--sl-color-gray-4);
+}
+
+.sl-markdown-content :is(ul, ol):not(:where(.not-content *)) > li + li {
+	margin-top: 0.4rem;
+}
+
+.sl-markdown-content hr:not(:where(.not-content *)) {
+	border-color: var(--sl-color-hairline-light);
+	margin-block: 2.5rem;
+}
+
+.sl-markdown-content blockquote:not(:where(.not-content *)) {
+	border-inline-start: 2px solid var(--sl-color-accent);
+	padding-inline-start: 1.1rem;
+	color: var(--sl-color-gray-1);
+}
+
+/* -- inline code ---------------------------------------------------------------------------- */
+
+.sl-markdown-content code:not(:where(.not-content *, pre *)) {
+	padding: 0.1em 0.36em;
+	border: 1px solid var(--sl-color-hairline-light);
+	border-radius: 0.34rem;
+	background-color: var(--sl-color-bg-inline-code);
+	font-size: 0.84em;
+	color: var(--sl-color-gray-1);
+	overflow-wrap: anywhere;
+}
+
+.sl-markdown-content a code:not(:where(.not-content *, pre *)) {
+	color: inherit;
+}
+
+.sl-markdown-content :is(h2, h3, h4) code:not(:where(.not-content *, pre *)) {
+	font-size: 0.88em;
+}
+
+/* -- tables --------------------------------------------------------------------------------- */
+
+.sl-markdown-content table:not(:where(.not-content *)) {
+	display: block;
+	width: 100%;
+	overflow-x: auto;
+	border-collapse: collapse;
+	font-size: 0.875rem;
+	line-height: 1.55;
+}
+
+.sl-markdown-content :is(th, td):not(:where(.not-content *)) {
+	padding: 0.6rem 0.9rem;
+	border-bottom: 1px solid var(--sl-color-hairline-light);
+	vertical-align: top;
+}
+
+.sl-markdown-content :is(th, td):not(:where(.not-content *)):first-child {
+	padding-inline-start: 0.1rem;
+}
+
+.sl-markdown-content th:not(:where(.not-content *)) {
+	border-bottom-color: var(--sl-color-gray-5);
+	font-size: 0.75rem;
+	font-weight: 600;
+	letter-spacing: 0.02em;
+	text-align: start;
+	white-space: nowrap;
+	color: var(--sl-color-gray-3);
+}
+
+.sl-markdown-content tr:last-child td:not(:where(.not-content *)) {
+	border-bottom-color: transparent;
+}
+
+/* In a table a name is kept whole. A column is as wide as its longest name, and a table that
+   does not fit scrolls sideways, which reads better than a name broken across three lines. */
+.sl-markdown-content td:not(:where(.not-content *)) code {
+	overflow-wrap: break-word;
+}
+
+/* One word of code, marked by src/markdown/table-names.mjs: never broken, even at a hyphen. */
+.sl-markdown-content td code.sw-keep {
+	white-space: nowrap;
+}
+
+
+/* On a narrow screen the column that explains stays wide enough to read. */
+@media (max-width: 50rem) {
+	.sl-markdown-content td:not(:where(.not-content *)):last-child:not(:first-child) {
+		min-width: 13rem;
+	}
+}
+
+.sl-markdown-content tbody tr:nth-child(2n):not(:where(.not-content *)) {
+	background-color: transparent;
+}
+
+/* -- code blocks ---------------------------------------------------------------------------- */
+
+.sl-markdown-content .expressive-code {
+	margin-block: 1.25rem;
+}
+
+.expressive-code .frame {
+	--ec-brdCol: var(--sl-color-hairline-light);
+}
+
+.expressive-code .frame pre {
+	background-color: var(--sw-color-surface) !important;
+}
+
+.expressive-code .frame.has-title:not(.is-terminal) .header,
+.expressive-code .frame.is-terminal .header {
+	background-color: var(--sw-color-surface) !important;
+}
+
+.expressive-code .copy button {
+	border-radius: 0.35rem;
+}
+
+/* A plan is the thing the whole framework is about; let it breathe a little more. */
+.expressive-code pre[data-language='plan'] {
+	--ec-codeLineHeight: 1.8;
+}
+
+/* -- a Python example and its TypeScript twin, one shown at a time ---------------------------- */
+
+code-tabs {
+	display: block;
+	margin-block: 1.25rem;
+	border: 1px solid var(--sl-color-hairline-light);
+	border-radius: var(--sw-radius);
+	background-color: var(--sw-color-surface);
+	overflow: hidden;
+}
+
+.sw-tabs__list {
+	display: flex;
+	gap: 0.15rem;
+	padding-inline: 0.55rem;
+	border-bottom: 1px solid var(--sl-color-hairline-light);
+}
+
+.sw-tabs__list [role='tab'] {
+	margin-bottom: -1px;
+	padding: 0.5rem 0.55rem 0.45rem;
+	border: 0;
+	border-bottom: 2px solid transparent;
+	background: none;
+	font: inherit;
+	font-size: 0.78rem;
+	font-weight: 500;
+	line-height: 1.2;
+	color: var(--sl-color-gray-3);
+	cursor: pointer;
+	transition: color 0.12s;
+}
+
+.sw-tabs__list [role='tab']:hover {
+	color: var(--sl-color-white);
+}
+
+.sw-tabs__list [role='tab'][aria-selected='true'] {
+	font-weight: 600;
+	color: var(--sl-color-white);
+	border-bottom-color: var(--sl-color-accent);
+}
+
+/* Which twin shows is the reader's choice, kept on <html>, so every pair moves together. */
+html[data-lang] code-tabs > [data-lang] {
+	display: none;
+}
+
+html[data-lang='python'] code-tabs > [data-lang='python'],
+html[data-lang='ts'] code-tabs > [data-lang='ts'] {
+	display: block;
+}
+
+/* With no script, both are shown, each under its name. */
+html:not([data-lang]) code-tabs > [data-lang]::before {
+	content: attr(data-label);
+	display: block;
+	padding: 0.5rem 1.1rem 0;
+	font-size: 0.75rem;
+	font-weight: 600;
+	color: var(--sl-color-gray-3);
+}
+
+/* Starlight spaces the children of a page's content; inside a pair that spacing is not wanted. */
+code-tabs > *,
+.sw-tabs__list > * {
+	margin-top: 0 !important;
+}
+
+code-tabs .expressive-code {
+	margin-block: 0 !important;
+	--ec-brdWd: 0px;
+	--ec-brdRad: 0px;
+}
+
+code-tabs .expressive-code .frame pre {
+	border: 0 !important;
+	border-radius: 0 !important;
+}
+
+@media print {
+	html[data-lang] code-tabs > [data-lang] {
+		display: block;
+	}
+	.sw-tabs__list {
+		display: none;
+	}
+}
+
+/* -- asides --------------------------------------------------------------------------------- */
+
+.starlight-aside {
+	padding: 0.9rem 1.1rem;
+	border: 1px solid color-mix(in srgb, var(--sl-color-asides-border) 45%, transparent);
+	border-inline-start-width: 1px;
+	border-radius: var(--sw-radius);
+	background-color: color-mix(in srgb, var(--sl-color-asides-border) 7%, transparent);
+	color: var(--sl-color-gray-2);
+	font-size: 0.9375rem;
+}
+
+.starlight-aside__title {
+	font-size: 0.8125rem;
+	font-weight: 600;
+	letter-spacing: 0.01em;
+	color: var(--sl-color-asides-text-accent);
+}
+
+.starlight-aside__icon {
+	font-size: 1rem;
+	width: 1rem;
+	height: 1rem;
+}
+
+.starlight-aside__content a {
+	color: var(--sl-color-asides-text-accent) !important;
+}
+
+.starlight-aside--note,
+.starlight-aside--tip {
+	--sl-color-asides-text-accent: var(--sl-color-text-accent);
+	--sl-color-asides-border: var(--sl-color-accent);
+}
+
+/* -- the top of a page: where it sits, its name, what it is for, and how to take it away ----- */
+
+.sw-page-head {
+	display: flex;
+	flex-direction: column;
+	gap: 0.85rem;
+	margin-top: 0.75rem;
+}
+
+.sw-page-head__eyebrow {
+	font-size: 0.75rem;
+	font-weight: 600;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--sl-color-text-accent);
+}
+
+.sw-page-head__row {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 0.9rem 1.5rem;
+}
+
+.sw-page-head h1 {
+	flex: 1 1 16rem;
+	margin: 0;
+	font-size: var(--sl-text-h1);
+	line-height: 1.12;
+	font-weight: 650;
+	letter-spacing: -0.03em;
+	text-wrap: balance;
+	color: var(--sl-color-white);
+}
+
+.sw-page-head__lede {
+	max-width: 42rem;
+	font-size: 1.125rem;
+	line-height: 1.55;
+	text-wrap: pretty;
+	color: var(--sl-color-gray-3);
+}
+
+/* -- the page menu: copy as Markdown, or open the page in a model ---------------------------- */
+
+.sw-actions {
+	position: relative;
+	flex: none;
+	display: inline-flex;
+	margin-top: 0.3rem;
+	font-size: 0.8125rem;
+	line-height: 1;
+}
+
+.sw-actions__group {
+	display: inline-flex;
+	border: 1px solid var(--sl-color-hairline-light);
+	border-radius: var(--sw-radius);
+	background-color: var(--sw-color-surface);
+	transition: border-color 0.15s;
+}
+
+.sw-actions__group:hover,
+.sw-actions__group:focus-within {
+	border-color: var(--sl-color-gray-4);
+}
+
+.sw-actions button,
+.sw-actions a {
+	font: inherit;
+	color: var(--sl-color-gray-1);
+	cursor: pointer;
+}
+
+.sw-actions__copy,
+.sw-actions__toggle {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.45rem;
+	height: 2rem;
+	border: 0;
+	background: none;
+	font-weight: 500;
+	transition:
+		color 0.12s,
+		background-color 0.12s;
+}
+
+.sw-actions__copy {
+	padding: 0 0.7rem 0 0.65rem;
+	border-radius: calc(var(--sw-radius) - 1px) 0 0 calc(var(--sw-radius) - 1px);
+}
+
+.sw-actions__toggle {
+	padding: 0 0.45rem;
+	border-inline-start: 1px solid var(--sl-color-hairline-light);
+	border-radius: 0 calc(var(--sw-radius) - 1px) calc(var(--sw-radius) - 1px) 0;
+}
+
+.sw-actions__copy:hover,
+.sw-actions__toggle:hover,
+.sw-actions__toggle[aria-expanded='true'] {
+	color: var(--sl-color-white);
+	background-color: var(--sl-color-hairline-light);
+}
+
+.sw-actions svg {
+	flex: none;
+	width: 0.95rem;
+	height: 0.95rem;
+}
+
+/* The copy button shows a tick while it says "Copied", and its own icon otherwise. */
+.sw-actions__copy[data-state='copied'] [data-icon='copy'],
+.sw-actions__copy:not([data-state='copied']) [data-icon='check'] {
+	display: none;
+}
+
+.sw-actions__toggle svg {
+	transition: transform 0.15s;
+}
+
+.sw-actions__toggle[aria-expanded='true'] svg {
+	transform: rotate(180deg);
+}
+
+.sw-actions__copy[data-state='copied'] {
+	color: var(--sl-color-text-accent);
+}
+
+.sw-actions__copy[data-state='failed'] {
+	color: var(--sl-color-red);
+}
+
+.sw-actions__menu {
+	position: absolute;
+	z-index: 9;
+	inset-block-start: calc(100% + 0.4rem);
+	inset-inline-end: 0;
+	width: 17.5rem;
+	margin: 0;
+	padding: 0.3rem;
+	border: 1px solid var(--sl-color-hairline-light);
+	border-radius: var(--sw-radius-lg);
+	background-color: var(--sw-color-surface-raised);
+	box-shadow: var(--sw-shadow-pop);
+	list-style: none;
+}
+
+.sw-actions__menu[hidden] {
+	display: none;
+}
+
+.sw-actions__menu li {
+	margin: 0;
+}
+
+.sw-actions__menu li + li.sw-actions__rule {
+	margin-top: 0.3rem;
+	padding-top: 0.3rem;
+	border-top: 1px solid var(--sl-color-hairline-light);
+}
+
+.sw-actions__item {
+	display: grid;
+	grid-template-columns: 1.9rem 1fr auto;
+	align-items: center;
+	gap: 0.15rem 0.6rem;
+	width: 100%;
+	padding: 0.45rem 0.5rem;
+	border: 0;
+	border-radius: 0.4rem;
+	background: none;
+	text-align: start;
+	text-decoration: none;
+}
+
+.sw-actions__item:hover,
+.sw-actions__item:focus-visible {
+	background-color: var(--sl-color-hairline-light);
+	outline: none;
+}
+
+.sw-actions__icon {
+	grid-row: span 2;
+	display: grid;
+	place-items: center;
+	width: 1.9rem;
+	height: 1.9rem;
+	border: 1px solid var(--sl-color-hairline-light);
+	border-radius: 0.4rem;
+	color: var(--sl-color-gray-2);
+}
+
+.sw-actions__label {
+	font-weight: 550;
+	color: var(--sl-color-white);
+}
+
+.sw-actions__hint {
+	grid-column: 2;
+	font-size: 0.75rem;
+	line-height: 1.3;
+	color: var(--sl-color-gray-3);
+}
+
+.sw-actions__out {
+	grid-row: 1 / span 2;
+	grid-column: 3;
+	color: var(--sl-color-gray-4);
+}
+
+@media (max-width: 30rem) {
+	.sw-actions__menu {
+		inset-inline: 0 auto;
+		width: min(17.5rem, calc(100vw - 2rem));
+	}
+}
+
+@media print {
+	.sw-actions {
+		display: none;
+	}
+}
+
+/* -- the foot of the site ------------------------------------------------------------------- */
+
+.sw-foot {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 0.5rem 2rem;
+	margin-top: 1rem;
+	padding-top: 1.5rem;
+	border-top: 1px solid var(--sl-color-hairline);
+	font-size: 0.8125rem;
+	color: var(--sl-color-gray-3);
+}
+
+.sw-foot p {
+	max-width: 34rem;
+}
+
+.sw-foot nav {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.25rem 1.1rem;
+}
+
+.sw-foot a {
+	color: var(--sl-color-gray-3);
+	text-decoration: none;
+}
+
+.sw-foot a:hover {
+	color: var(--sl-color-white);
+}
+
+/* -- small pieces used inside pages --------------------------------------------------------- */
+
+/* A row of facts under a heading: what a blueprint mounts, what a page assumes. */
+.sw-note {
+	padding: 0.75rem 1rem;
+	border: 1px dashed var(--sl-color-hairline-light);
+	border-radius: var(--sw-radius);
+	font-size: 0.875rem;
+	color: var(--sl-color-gray-3);
+}
+
+.sw-note code {
+	font-size: 0.82em !important;
+}
+
+/* Cards that lead somewhere: a list of links under `:::cards`, drawn as a grid. */
+.sw-cards {
+	margin-block: 1.5rem;
+}
+
+.sw-cards > ul {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(min(15.5rem, 100%), 1fr));
+	gap: 0.75rem;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.sw-cards > ul > li {
+	position: relative;
+	margin: 0 !important;
+	padding: 0.95rem 1.1rem 1rem;
+	border: 1px solid var(--sl-color-hairline-light);
+	border-radius: var(--sw-radius-lg);
+	background-color: var(--sw-color-surface);
+	font-size: 0.875rem;
+	line-height: 1.5;
+	color: var(--sl-color-gray-3);
+	transition: border-color 0.15s;
+}
+
+.sw-cards > ul > li:hover,
+.sw-cards > ul > li:focus-within {
+	border-color: var(--sl-color-accent);
+}
+
+.sw-cards > ul > li > a {
+	display: block;
+	margin-bottom: 0.25rem;
+	font-size: 0.9375rem;
+	font-weight: 600 !important;
+	letter-spacing: -0.01em;
+	text-decoration: none !important;
+	color: var(--sl-color-white) !important;
+}
+
+/* The whole card is the link. */
+.sw-cards > ul > li > a::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+}
+
+.sw-cards > ul > li > a::before {
+	content: '→';
+	float: inline-end;
+	margin-inline-start: 0.5rem;
+	font-weight: 400;
+	color: var(--sl-color-gray-4);
+	transition:
+		color 0.15s,
+		transform 0.15s;
+}
+
+.sw-cards > ul > li:hover > a::before {
+	color: var(--sl-color-text-accent);
+	transform: translateX(2px);
+}
+
+.sw-cards > ul > li > a:focus-visible {
+	outline: none;
+}
+
+.sw-cards > ul > li:has(> a:focus-visible) {
+	outline: 2px solid var(--sl-color-accent);
+	outline-offset: 2px;
+}
+
+/* Diagrams are drawn in the page's own colours. */
+.sw-figure {
+	margin-block: 1.75rem;
+	padding: 1.25rem;
+	border: 1px solid var(--sl-color-hairline-light);
+	border-radius: var(--sw-radius-lg);
+	background-color: var(--sw-color-surface);
+	overflow-x: auto;
+}
+
+.sw-figure svg {
+	display: block;
+	width: 100%;
+	min-width: 34rem;
+	height: auto;
+	font-family: var(--__sl-font);
+}
+
+.sw-figure figcaption {
+	margin-top: 0.9rem;
+	font-size: 0.8125rem;
+	text-align: center;
+	color: var(--sl-color-gray-3);
+}

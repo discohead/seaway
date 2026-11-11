@@ -1,0 +1,91 @@
+---
+/**
+ * The script behind `<code-tabs>`: a Python example and its TypeScript twin, one shown at a time.
+ *
+ * Which one shows is decided by `data-lang` on `<html>`, in CSS, so every pair on the page moves
+ * together and nothing jumps while the page loads (a line in `<head>` sets the attribute before
+ * the first paint). This script only draws the tabs and changes the attribute. With no script at
+ * all, both examples are shown, each under its label.
+ */
+---
+
+<script>
+	const KEY = 'seaway:lang';
+	const LANGS = ['python', 'ts'] as const;
+	type Lang = (typeof LANGS)[number];
+
+	const root = document.documentElement;
+	const current = (): Lang => (root.dataset.lang === 'ts' ? 'ts' : 'python');
+
+	function choose(lang: Lang) {
+		root.dataset.lang = lang;
+		try {
+			localStorage.setItem(KEY, lang);
+		} catch {
+			// a browser that will not store it still switches for this page
+		}
+		document.dispatchEvent(new CustomEvent('seaway:lang', { detail: lang }));
+	}
+
+	class CodeTabs extends HTMLElement {
+		#tabs: HTMLButtonElement[] = [];
+
+		connectedCallback() {
+			if (this.#tabs.length) return;
+			const list = document.createElement('div');
+			list.className = 'sw-tabs__list';
+			list.setAttribute('role', 'tablist');
+			list.setAttribute('aria-label', 'Language');
+			const uid = Math.random().toString(36).slice(2, 8);
+			for (const panel of this.querySelectorAll<HTMLElement>(':scope > [data-lang]')) {
+				const lang = panel.dataset.lang as Lang;
+				const tab = document.createElement('button');
+				tab.type = 'button';
+				tab.id = `tab-${uid}-${lang}`;
+				tab.textContent = panel.dataset.label ?? lang;
+				tab.dataset.lang = lang;
+				tab.setAttribute('role', 'tab');
+				panel.id = `panel-${uid}-${lang}`;
+				panel.setAttribute('role', 'tabpanel');
+				panel.setAttribute('aria-labelledby', tab.id);
+				tab.setAttribute('aria-controls', panel.id);
+				tab.addEventListener('click', () => this.#pick(lang, tab));
+				tab.addEventListener('keydown', (event) => this.#key(event));
+				this.#tabs.push(tab);
+				list.append(tab);
+			}
+			this.prepend(list);
+			this.#sync();
+			document.addEventListener('seaway:lang', () => this.#sync());
+		}
+
+		/** Switch every pair, and keep the tab that was clicked where it was on the screen. */
+		#pick(lang: Lang, tab: HTMLElement) {
+			const before = tab.getBoundingClientRect().top;
+			choose(lang);
+			const moved = tab.getBoundingClientRect().top - before;
+			if (moved) window.scrollBy({ top: moved, behavior: 'instant' });
+		}
+
+		#key(event: KeyboardEvent) {
+			if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+			event.preventDefault();
+			const at = this.#tabs.indexOf(event.currentTarget as HTMLButtonElement);
+			const next = this.#tabs[(at + (event.key === 'ArrowRight' ? 1 : -1) + this.#tabs.length) % this.#tabs.length]!;
+			this.#pick(next.dataset.lang as Lang, next);
+			next.focus();
+		}
+
+		#sync() {
+			const lang = current();
+			for (const tab of this.#tabs) {
+				const selected = tab.dataset.lang === lang;
+				tab.setAttribute('aria-selected', String(selected));
+				tab.tabIndex = selected ? 0 : -1;
+			}
+		}
+	}
+
+	if (!root.dataset.lang) root.dataset.lang = 'python';
+	customElements.define('code-tabs', CodeTabs);
+</script>

@@ -1,0 +1,366 @@
+/*
+ * The home page. Starlight marks a page that has a hero with `data-has-hero` on <html>.
+ */
+
+:root[data-has-hero] {
+	--sl-content-width: 77rem;
+}
+
+:root[data-has-hero] body {
+	overflow-x: clip;
+}
+
+:root[data-has-hero] .content-panel {
+	padding-top: 0;
+}
+
+/* -- the hero ------------------------------------------------------------------------------- */
+
+.sw-hero {
+	position: relative;
+	isolation: isolate;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 2.5rem;
+	align-items: center;
+	padding-block: 3rem 1rem;
+}
+
+@media (min-width: 72rem) {
+	.sw-hero {
+		grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+		gap: 3rem;
+		padding-block: 4.5rem 2rem;
+	}
+}
+
+/* Water, drawn as the lines of the mark, fading out from the corner the example sits in. */
+.sw-hero__water {
+	position: absolute;
+	z-index: -1;
+	inset-block: -6rem -4rem;
+	inset-inline: calc(50% - 50vw);
+	width: 100vw;
+	height: calc(100% + 10rem);
+	color: var(--sl-color-accent);
+	opacity: 0.16;
+	pointer-events: none;
+	-webkit-mask-image: radial-gradient(58% 62% at 74% 34%, #000 0%, transparent 78%);
+	mask-image: radial-gradient(58% 62% at 74% 34%, #000 0%, transparent 78%);
+}
+
+:root[data-theme='light'] .sw-hero__water {
+	opacity: 0.22;
+}
+
+.sw-hero__copy {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 1.4rem;
+}
+
+/* What it is, and the page menu every page has: copy this page, or open it in a model. */
+.sw-hero__top {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.7rem 1.25rem;
+	align-self: stretch;
+}
+
+.sw-hero__top .sw-actions {
+	margin-top: 0;
+}
+
+/* Here the menu opens from its left edge: the button can sit at the start of a line. */
+.sw-hero__top .sw-actions__menu {
+	inset-inline: 0 auto;
+}
+
+.sw-hero__eyebrow {
+	margin: 0;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.4rem 0.7rem;
+	font-size: 0.8125rem;
+	color: var(--sl-color-gray-3);
+}
+
+.sw-hero__eyebrow a {
+	color: var(--sl-color-gray-1);
+	text-decoration: underline;
+	text-decoration-color: var(--sl-color-gray-4);
+	text-underline-offset: 0.2em;
+}
+
+.sw-hero__eyebrow a:hover {
+	color: var(--sl-color-white);
+}
+
+.sw-hero__pill {
+	padding: 0.2rem 0.55rem;
+	border: 1px solid color-mix(in srgb, var(--sl-color-accent) 40%, transparent);
+	border-radius: 999px;
+	background-color: color-mix(in srgb, var(--sl-color-accent) 10%, transparent);
+	font-family: var(--__sl-font-mono);
+	font-size: 0.75rem;
+	font-weight: 500;
+	color: var(--sl-color-text-accent);
+}
+
+.sw-hero h1 {
+	font-size: clamp(2.5rem, 1.4rem + 4.6vw, 4rem);
+	line-height: 1.02;
+	font-weight: 650;
+	letter-spacing: -0.045em;
+	text-wrap: balance;
+	color: var(--sl-color-white);
+}
+
+.sw-hero h1 code {
+	font-family: var(--__sl-font-mono);
+	font-size: 0.9em;
+	font-weight: 600;
+	letter-spacing: -0.06em;
+	color: var(--sl-color-text-accent);
+}
+
+.sw-hero__tagline {
+	max-width: 31rem;
+	font-size: clamp(1.0625rem, 0.95rem + 0.5vw, 1.25rem);
+	line-height: 1.55;
+	text-wrap: pretty;
+	color: var(--sl-color-gray-2);
+}
+
+.sw-hero__actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.75rem;
+	margin-top: 0.35rem;
+}
+
+.sw-button {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	height: 2.75rem;
+	padding-inline: 1.15rem;
+	border: 1px solid transparent;
+	border-radius: 0.6rem;
+	font-size: 0.9375rem;
+	font-weight: 600;
+	letter-spacing: -0.005em;
+	text-decoration: none;
+	transition:
+		background-color 0.15s,
+		border-color 0.15s,
+		color 0.15s;
+}
+
+.sw-button svg {
+	width: 1rem;
+	height: 1rem;
+	transition: transform 0.15s;
+}
+
+.sw-button:hover svg {
+	transform: translateX(2px);
+}
+
+.sw-button--primary {
+	background-color: var(--sl-color-accent);
+	color: #04211d;
+}
+
+.sw-button--primary:hover {
+	background-color: var(--sl-color-accent-high);
+}
+
+:root[data-theme='light'] .sw-button--primary {
+	color: #ffffff;
+}
+
+.sw-button--secondary,
+.sw-button--minimal {
+	border-color: var(--sl-color-hairline-light);
+	background-color: var(--sw-color-surface);
+	color: var(--sl-color-white);
+}
+
+.sw-button--secondary:hover,
+.sw-button--minimal:hover {
+	border-color: var(--sl-color-gray-4);
+}
+
+.sw-hero__facts {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.35rem 1.25rem;
+	margin: 0.4rem 0 0;
+	padding: 0;
+	list-style: none;
+	font-size: 0.8125rem;
+	color: var(--sl-color-gray-3);
+}
+
+.sw-hero__facts li {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.45rem;
+}
+
+.sw-hero__facts li::before {
+	content: '';
+	width: 0.3rem;
+	height: 0.3rem;
+	border-radius: 50%;
+	background-color: var(--sl-color-accent);
+}
+
+/* The example: a statement on top, and under it the plan it prints. */
+.sw-hero__demo {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+	min-width: 0;
+}
+
+.sw-hero__demo > * {
+	margin: 0 !important;
+	box-shadow: 0 30px 70px -40px color-mix(in srgb, var(--sl-color-accent) 55%, transparent);
+}
+
+.sw-hero__demo code-tabs,
+.sw-hero__demo .expressive-code .frame pre {
+	background-color: color-mix(in srgb, var(--sw-color-surface) 88%, transparent) !important;
+	-webkit-backdrop-filter: blur(6px);
+	backdrop-filter: blur(6px);
+}
+
+.sw-hero__demo code-tabs .expressive-code .frame pre {
+	background-color: transparent !important;
+	-webkit-backdrop-filter: none;
+	backdrop-filter: none;
+}
+
+.sw-hero__demo .expressive-code {
+	--ec-codeFontSize: 0.775rem;
+	--ec-codePadInl: 1rem;
+}
+
+/* -- the bands below it --------------------------------------------------------------------- */
+
+.sw-section {
+	margin-top: 6rem !important;
+}
+
+.sw-section__head {
+	display: flex;
+	flex-direction: column;
+	gap: 0.85rem;
+	max-width: 46rem;
+	margin-bottom: 2.25rem;
+}
+
+.sw-section__eyebrow {
+	font-size: 0.75rem;
+	font-weight: 600;
+	letter-spacing: 0.09em;
+	text-transform: uppercase;
+	color: var(--sl-color-text-accent);
+}
+
+.sw-section__head h2 {
+	font-size: clamp(1.75rem, 1.35rem + 1.6vw, 2.375rem);
+	line-height: 1.1;
+	font-weight: 650;
+	letter-spacing: -0.035em;
+	text-wrap: balance;
+	color: var(--sl-color-white);
+}
+
+.sw-section__lede {
+	font-size: 1.0625rem;
+	line-height: 1.65;
+	text-wrap: pretty;
+	color: var(--sl-color-gray-3);
+}
+
+.sw-section__body > :first-child {
+	margin-top: 0 !important;
+}
+
+.sw-section__body > p,
+.sw-section__body > ul:not(.sw-cards ul) {
+	max-width: 46rem;
+}
+
+:root[data-has-hero] .sw-section table {
+	font-size: 0.9375rem;
+}
+
+:root[data-has-hero] .sw-section td:first-child {
+	font-weight: 600;
+	white-space: nowrap;
+	color: var(--sl-color-white);
+}
+
+:root[data-has-hero] .sw-section :is(th, td) {
+	padding-block: 0.85rem;
+}
+
+:root[data-has-hero] .sw-cards > ul {
+	grid-template-columns: repeat(auto-fill, minmax(min(17rem, 100%), 1fr));
+}
+
+/* -- the meters ----------------------------------------------------------------------------- */
+
+.sw-meters {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr));
+	gap: 0;
+	border: 1px solid var(--sl-color-hairline-light);
+	border-radius: var(--sw-radius-lg);
+	background-color: var(--sw-color-surface);
+	overflow: hidden;
+}
+
+.sw-meter {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	padding: 1.5rem 1.6rem 1.6rem;
+	border-inline-start: 1px solid var(--sl-color-hairline-light);
+	border-block-start: 1px solid var(--sl-color-hairline-light);
+	margin: -1px 0 0 -1px;
+}
+
+.sw-meter__name {
+	font-size: 0.75rem;
+	font-weight: 600;
+	letter-spacing: 0.09em;
+	text-transform: uppercase;
+	color: var(--sl-color-gray-3);
+}
+
+.sw-meter__rate {
+	font-family: var(--__sl-font-mono);
+	font-size: 1.375rem;
+	font-weight: 500;
+	letter-spacing: -0.03em;
+	color: var(--sw-color-price);
+}
+
+.sw-meter__how {
+	font-size: 0.9375rem;
+	line-height: 1.55;
+	color: var(--sl-color-gray-2);
+}
+
+:root[data-has-hero] footer {
+	margin-top: 5rem;
+}

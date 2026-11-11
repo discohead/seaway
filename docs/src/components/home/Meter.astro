@@ -1,0 +1,15 @@
+---
+/** One meter: what is counted, what it costs, and how seaway moves it less. */
+interface Props {
+	name: string;
+	rate: string;
+}
+
+const { name, rate } = Astro.props;
+---
+
+<div class="sw-meter">
+	<p class="sw-meter__name">{name}</p>
+	<p class="sw-meter__rate">{rate}</p>
+	<div class="sw-meter__how"><slot /></div>
+</div>

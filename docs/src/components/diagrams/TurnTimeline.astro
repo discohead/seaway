@@ -1,0 +1,49 @@
+---
+/**
+ * A turn in time: a checkpoint and a branch at the start, the turn's writes on the branch, and
+ * at commit either a copy to the main line or a conflict. The page says the same in words below.
+ */
+import './diagram.css';
+import { DIAGRAMS } from './descriptions.mjs';
+
+const { title, description } = DIAGRAMS.TurnTimeline;
+---
+
+<figure class="sw-figure not-content">
+	<svg viewBox="0 0 760 262" role="img" aria-labelledby="turn-title turn-desc">
+		<title id="turn-title">{title}</title>
+		<desc id="turn-desc">{description}</desc>
+
+		<path class="d-line" d="M24 64h712"></path>
+		<text class="d-label d-label--muted" x="24" y="86">MAIN LINE</text>
+
+		<path class="d-line d-line--accent" d="M160 64c0 46 30 86 70 86h300c40 0 70-40 70-86"></path>
+		<text class="d-label" x="246" y="174">THE TURN'S BRANCH</text>
+
+		<circle class="d-dot d-dot--accent" cx="160" cy="64" r="5"></circle>
+		<text class="d-title" x="160" y="28" text-anchor="middle">begin</text>
+		<text class="d-sub" x="160" y="45" text-anchor="middle">checkpoint, then branch</text>
+
+		<circle class="d-dot d-dot--accent" cx="300" cy="150" r="3.5"></circle>
+		<circle class="d-dot d-dot--accent" cx="380" cy="150" r="3.5"></circle>
+		<circle class="d-dot d-dot--accent" cx="460" cy="150" r="3.5"></circle>
+		<text class="d-sub" x="380" y="134" text-anchor="middle">the turn's writes: nobody else sees them</text>
+
+		<circle class="d-dot d-dot--warn" cx="380" cy="64" r="5"></circle>
+		<text class="d-title" x="380" y="28" text-anchor="middle">another writer</text>
+		<text class="d-sub" x="380" y="45" text-anchor="middle">changes the main line</text>
+
+		<circle class="d-dot d-dot--accent" cx="600" cy="64" r="5"></circle>
+		<text class="d-title" x="600" y="28" text-anchor="middle">commit</text>
+		<text class="d-sub" x="600" y="45" text-anchor="middle">validate, then copy</text>
+
+		<text class="d-label d-label--muted" x="24" y="200">AT COMMIT</text>
+		<rect class="d-accent" x="24" y="208" width="346" height="46" rx="7"></rect>
+		<text class="d-title" x="40" y="228">No path changed on both</text>
+		<text class="d-sub" x="40" y="244">the turn's changes are copied across: one call per disk</text>
+		<rect class="d-warn" x="390" y="208" width="346" height="46" rx="7"></rect>
+		<text class="d-title" x="406" y="228">A path changed on both</text>
+		<text class="d-sub" x="406" y="244">Conflict: nothing is applied, on any disk</text>
+	</svg>
+	<figcaption>Snapshot isolation over files, first committer wins, path by path.</figcaption>
+</figure>

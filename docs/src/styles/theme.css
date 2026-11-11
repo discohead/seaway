@@ -1,0 +1,356 @@
+/*
+ * The theme: colour, type and the chrome around a page.
+ *
+ * Starlight reads its palette from custom properties, dark first, with light as an override.
+ * The names keep Starlight's meaning: "white" is the strongest text colour and "black" is the
+ * page, in both themes.
+ */
+
+:root {
+	--sl-font: 'Geist Variable';
+	--sl-font-mono: 'Geist Mono Variable';
+
+	/* Deep water. */
+	--sl-color-white: #f4f7f8;
+	--sl-color-gray-1: #e2e9ec;
+	--sl-color-gray-2: #bac6cc;
+	--sl-color-gray-3: #8798a1;
+	--sl-color-gray-4: #4b5b64;
+	--sl-color-gray-5: #222e35;
+	--sl-color-gray-6: #131b20;
+	--sl-color-black: #0a0f12;
+
+	--sl-color-accent-low: #0b2f2c;
+	--sl-color-accent: #2ac4af;
+	--sl-color-accent-high: #7ce9da;
+
+	/* A second colour for money: every plan carries a price. */
+	--sw-color-price: #f0b955;
+
+	--sl-color-bg-nav: var(--sl-color-black);
+	--sl-color-bg-sidebar: var(--sl-color-black);
+	--sl-color-bg-inline-code: #18222a;
+	--sl-color-hairline-light: #232f36;
+	--sl-color-hairline: #1a242a;
+	--sl-color-hairline-shade: #1a242a;
+
+	--sw-color-surface: #0f161a;
+	--sw-color-surface-raised: #131c21;
+	--sw-shadow-pop: 0 1px 0 0 rgb(255 255 255 / 0.04) inset, 0 12px 32px -8px rgb(0 0 0 / 0.6);
+
+	--sl-text-h1: 2rem;
+	--sl-text-h2: 1.4375rem;
+	--sl-text-h3: 1.1875rem;
+	--sl-text-h4: 1.0625rem;
+	--sl-text-h5: 1rem;
+	--sl-line-height: 1.7;
+	--sl-line-height-headings: 1.2;
+
+	--sl-content-width: 46rem;
+	--sl-sidebar-width: 17.5rem;
+	/* The narrowest the "On this page" column gets before the content gives way. */
+	--sw-toc-min-width: 13.5rem;
+
+	--sw-radius: 0.5rem;
+	--sw-radius-lg: 0.75rem;
+}
+
+:root[data-theme='light'] {
+	/* Chart paper. */
+	--sl-color-white: #0b1416;
+	--sl-color-gray-1: #162225;
+	--sl-color-gray-2: #2b393d;
+	--sl-color-gray-3: #55656a;
+	--sl-color-gray-4: #87969b;
+	--sl-color-gray-5: #c6d0d3;
+	--sl-color-gray-6: #e7eced;
+	--sl-color-gray-7: #f4f7f7;
+	--sl-color-black: #fcfdfd;
+
+	--sl-color-accent-low: #d5f1ec;
+	--sl-color-accent: #0c8073;
+	--sl-color-accent-high: #07564e;
+
+	--sw-color-price: #a3650b;
+
+	--sl-color-bg-nav: var(--sl-color-black);
+	--sl-color-bg-sidebar: var(--sl-color-black);
+	--sl-color-bg-inline-code: #eef2f3;
+	--sl-color-hairline-light: #dfe5e7;
+	--sl-color-hairline: #e7eced;
+	--sl-color-hairline-shade: #e7eced;
+
+	--sw-color-surface: #f7f9f9;
+	--sw-color-surface-raised: #ffffff;
+	--sw-shadow-pop: 0 0 0 1px rgb(11 20 22 / 0.04), 0 12px 32px -10px rgb(11 20 22 / 0.18);
+}
+
+@media (min-width: 50em) {
+	:root {
+		--sl-text-h1: 2.375rem;
+		--sl-text-h2: 1.5625rem;
+		--sl-text-h3: 1.25rem;
+		--sl-text-h4: 1.0625rem;
+	}
+}
+
+html {
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	text-rendering: optimizeLegibility;
+	font-feature-settings: 'ss01', 'cv11';
+}
+
+::selection {
+	background: color-mix(in srgb, var(--sl-color-accent) 32%, transparent);
+	color: var(--sl-color-white);
+}
+
+:focus-visible {
+	outline: 2px solid var(--sl-color-accent);
+	outline-offset: 2px;
+	border-radius: 4px;
+}
+
+/* -- header --------------------------------------------------------------------------------- */
+
+header.header {
+	background-color: color-mix(in srgb, var(--sl-color-black) 78%, transparent);
+	-webkit-backdrop-filter: saturate(1.6) blur(14px);
+	backdrop-filter: saturate(1.6) blur(14px);
+	border-bottom: 1px solid var(--sl-color-hairline);
+}
+
+.site-title {
+	gap: 0.6rem !important;
+	font-size: 1.125rem !important;
+	font-weight: 600 !important;
+	letter-spacing: -0.02em;
+	color: var(--sl-color-white) !important;
+}
+
+.site-title img {
+	height: 1.625rem !important;
+}
+
+/* The search box reads as a field, not a button. */
+site-search > button[data-open-modal] {
+	border-radius: var(--sw-radius);
+	border-color: var(--sl-color-hairline-light);
+	background-color: var(--sw-color-surface);
+	color: var(--sl-color-gray-3);
+	font-size: var(--sl-text-sm);
+	transition:
+		border-color 0.15s,
+		color 0.15s;
+}
+
+site-search > button[data-open-modal]:hover {
+	border-color: var(--sl-color-gray-4);
+	color: var(--sl-color-gray-1);
+}
+
+site-search > button[data-open-modal] > kbd {
+	border-radius: 0.3rem;
+	background-color: var(--sl-color-hairline-light);
+	font-family: var(--__sl-font);
+	color: var(--sl-color-gray-3);
+}
+
+.social-icons::after {
+	border-color: var(--sl-color-hairline-light) !important;
+}
+
+starlight-theme-select select,
+.social-icons a {
+	color: var(--sl-color-gray-3);
+	transition: color 0.15s;
+}
+
+starlight-theme-select label:hover,
+starlight-theme-select select:hover,
+.social-icons a:hover {
+	color: var(--sl-color-white);
+	opacity: 1;
+}
+
+/* -- the sidebar ---------------------------------------------------------------------------- */
+
+.sidebar-pane {
+	border-inline-end: 1px solid var(--sl-color-hairline);
+}
+
+.sidebar-content {
+	padding-top: 1.25rem;
+	gap: 0;
+}
+
+nav.sidebar ul.top-level > li {
+	margin-top: 0;
+	padding: 0;
+	border: 0;
+}
+
+nav.sidebar ul.top-level > li + li {
+	margin-top: 1.4rem;
+}
+
+nav.sidebar details > summary {
+	padding: 0.25rem 0.75rem;
+}
+
+nav.sidebar .group-label .large {
+	font-size: 0.6875rem;
+	font-weight: 600;
+	letter-spacing: 0.09em;
+	text-transform: uppercase;
+	color: var(--sl-color-gray-3);
+}
+
+nav.sidebar summary:hover .group-label .large {
+	color: var(--sl-color-gray-1);
+}
+
+nav.sidebar summary .caret {
+	color: var(--sl-color-gray-4);
+	font-size: 1rem;
+}
+
+nav.sidebar ul ul li {
+	margin-inline-start: 0;
+	border-inline-start: 0;
+	padding-inline-start: 0;
+}
+
+nav.sidebar a {
+	position: relative;
+	padding: 0.3rem 0.75rem;
+	border-radius: 0.4rem;
+	font-size: 0.875rem;
+	line-height: 1.45;
+	color: var(--sl-color-gray-2);
+	transition:
+		color 0.12s,
+		background-color 0.12s;
+}
+
+nav.sidebar a:hover,
+nav.sidebar a:focus-visible {
+	color: var(--sl-color-white);
+	background-color: var(--sw-color-surface);
+}
+
+nav.sidebar a[aria-current='page'],
+nav.sidebar a[aria-current='page']:hover,
+nav.sidebar a[aria-current='page']:focus {
+	font-weight: 550;
+	color: var(--sl-color-text-accent);
+	background-color: color-mix(in srgb, var(--sl-color-accent) 11%, transparent);
+}
+
+/* -- the right-hand table of contents ------------------------------------------------------- */
+
+.right-sidebar {
+	border-inline-start: 1px solid var(--sl-color-hairline);
+}
+
+.right-sidebar-panel h2,
+mobile-starlight-toc .toggle {
+	font-size: 0.6875rem;
+	font-weight: 600;
+	letter-spacing: 0.09em;
+	text-transform: uppercase;
+	color: var(--sl-color-gray-3);
+}
+
+starlight-toc a {
+	font-size: 0.8125rem;
+	line-height: 1.4;
+	color: var(--sl-color-gray-3);
+	transition: color 0.12s;
+}
+
+starlight-toc a:hover {
+	color: var(--sl-color-white);
+}
+
+starlight-toc a[aria-current='true'] {
+	color: var(--sl-color-text-accent);
+	font-weight: 550;
+}
+
+/* -- the foot of a page --------------------------------------------------------------------- */
+
+.pagination-links a {
+	border-radius: var(--sw-radius-lg);
+	border-color: var(--sl-color-hairline-light);
+	box-shadow: none;
+	padding: 0.9rem 1.1rem;
+	transition:
+		border-color 0.15s,
+		background-color 0.15s;
+}
+
+.pagination-links a:hover {
+	border-color: var(--sl-color-accent);
+	background-color: var(--sw-color-surface);
+}
+
+.pagination-links a > span {
+	font-size: 0.75rem;
+	color: var(--sl-color-gray-3);
+}
+
+.pagination-links .link-title {
+	font-size: 1.0625rem;
+	font-weight: 600;
+	letter-spacing: -0.01em;
+	color: var(--sl-color-white);
+}
+
+/* -- search --------------------------------------------------------------------------------- */
+
+site-search dialog {
+	border-color: var(--sl-color-hairline-light);
+	background-color: var(--sw-color-surface-raised);
+	box-shadow: var(--sw-shadow-pop);
+}
+
+@media (min-width: 50rem) {
+	site-search dialog {
+		border-radius: var(--sw-radius-lg);
+	}
+}
+
+#starlight__search {
+	--sl-search-result-spacing: 0.75rem;
+	--pagefind-ui-border-radius: var(--sw-radius);
+}
+
+/* -- room for code ----------------------------------------------------------------------------
+
+   Starlight narrows the content and the "On this page" column together as the window narrows.
+   Here the content keeps its full width, which is what 88 columns of code need, until that
+   column is down to its minimum. So a laptop at 1280 pixels shows every example whole. */
+
+@media (min-width: 72rem) {
+	.right-sidebar-container {
+		width: max(
+			var(--sw-toc-min-width),
+			min(
+				calc(100% - var(--sl-content-width) - 2 * var(--sl-content-pad-x)),
+				calc(var(--sl-sidebar-width) + (100% - var(--sl-content-width) - var(--sl-sidebar-width)) / 2)
+			)
+		);
+	}
+
+	[data-has-sidebar][data-has-toc] .main-pane {
+		width: min(
+			calc(100% - var(--sw-toc-min-width)),
+			max(
+				calc(var(--sl-content-width) + 2 * var(--sl-content-pad-x)),
+				calc(var(--sl-content-width) + (100% - var(--sl-content-width) - var(--sl-sidebar-width)) / 2)
+			)
+		);
+	}
+}

@@ -1,0 +1,21 @@
+---
+/** One band of the home page: a small label, a heading, a sentence, and whatever it holds. */
+interface Props {
+	eyebrow?: string;
+	title: string;
+	lede?: string;
+}
+
+const { eyebrow, title, lede } = Astro.props;
+---
+
+<section class="sw-section">
+	<header class="sw-section__head not-content">
+		{eyebrow && <p class="sw-section__eyebrow">{eyebrow}</p>}
+		<h2>{title}</h2>
+		{lede && <p class="sw-section__lede">{lede}</p>}
+	</header>
+	<div class="sw-section__body">
+		<slot />
+	</div>
+</section>

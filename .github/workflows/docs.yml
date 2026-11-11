@@ -1,0 +1,99 @@
+name: Docs
+
+# Runs every example on the site against both SDKs, builds the site, checks every link in it,
+# and publishes main to GitHub Pages. A change to an SDK runs it too: the examples have to keep
+# working, and the reference has to keep naming what is there.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/**"
+      - "python/**"
+      - "typescript/**"
+      - ".github/workflows/docs.yml"
+  pull_request:
+    paths:
+      - "docs/**"
+      - "python/**"
+      - "typescript/**"
+      - ".github/workflows/docs.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docs-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  build:
+    name: Check and build
+    runs-on: ubuntu-latest
+    env:
+      # The examples run on a local backend. Nothing here may reach an account.
+      ARCHIL_BACKEND: local
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # each page's "last updated" is read from the history
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 26
+          cache: npm
+          cache-dependency-path: |
+            docs/package-lock.json
+            typescript/package-lock.json
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+
+      - name: Install what the examples use
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq sqlite3 jq ripgrep
+          python -m pip install --quiet -e 'python[dev]'
+          npm ci --prefix typescript
+          npm ci --prefix docs
+
+      - name: Run every example, in Python and in TypeScript
+        working-directory: docs
+        run: npm run check:examples
+
+      - name: Check every API name against both SDKs
+        working-directory: docs
+        run: npm run check:api
+
+      - name: Type-check the site's own code
+        working-directory: docs
+        run: npm run check:types
+
+      - name: Build the site, and check every link in it
+        working-directory: docs
+        run: npm run build
+
+      - uses: actions/configure-pages@v6
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+
+      - uses: actions/upload-pages-artifact@v5
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        with:
+          path: docs/dist
+
+  deploy:
+    name: Publish
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

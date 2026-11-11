@@ -1,0 +1,60 @@
+---
+/**
+ * The top of the home page: what seaway is, in words on one side and in code on the other.
+ *
+ * The words come from the page's `hero` front matter. The code is the component's children,
+ * written as ordinary fences in `index.mdx`, so the example on the front page is run by
+ * `scripts/check-examples.mjs` like every other.
+ */
+import { VERSION, withBase } from '../../site.mjs';
+import PageActions from '../PageActions.astro';
+
+const { hero } = Astro.locals.starlightRoute.entry.data;
+if (!hero) throw new Error('the home page needs `hero` in its front matter');
+---
+
+<section class="sw-hero not-content">
+	<svg class="sw-hero__water" aria-hidden="true" focusable="false">
+		<defs>
+			<pattern id="sw-water" width="132" height="26" patternUnits="userSpaceOnUse">
+				<path d="M0 13c22-11 44-11 66 0s44 11 66 0" fill="none" stroke="currentColor" stroke-width="1" />
+			</pattern>
+		</defs>
+		<rect width="100%" height="100%" fill="url(#sw-water)" />
+	</svg>
+
+	<div class="sw-hero__copy">
+		<div class="sw-hero__top">
+			<p class="sw-hero__eyebrow">
+				<span class="sw-hero__pill">v{VERSION}</span>
+				<span>A framework for <a href="https://archil.com">Archil</a> · unofficial prototype</span>
+			</p>
+			<PageActions />
+		</div>
+		<h1 id="_top" set:html={hero.title} />
+		{hero.tagline && <p class="sw-hero__tagline" set:html={hero.tagline} />}
+		<div class="sw-hero__actions">
+			{
+				hero.actions.map((action) => (
+					<a class:list={['sw-button', `sw-button--${action.variant}`]} href={withBase(action.link)}>
+						{action.text}
+						{action.variant === 'primary' && (
+							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+								<path d="M5 12h14m-6-6 6 6-6 6" />
+							</svg>
+						)}
+					</a>
+				))
+			}
+		</div>
+		<ul class="sw-hero__facts">
+			<li>Python and TypeScript, one API</li>
+			<li>No runtime dependencies</li>
+			<li>Runs locally with no account</li>
+		</ul>
+	</div>
+
+	<div class="sw-hero__demo">
+		<slot />
+	</div>
+</section>

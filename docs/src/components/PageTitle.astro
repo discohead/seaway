@@ -1,0 +1,36 @@
+---
+/**
+ * The top of a page: which part of the docs it belongs to, its title, one sentence on what it
+ * is for, and the page menu. The sentence is the page's `description`, so it is written once
+ * and is also what a search result and `llms.txt` show.
+ */
+import type { StarlightRouteData } from '@astrojs/starlight/route-data';
+
+import PageActions from './PageActions.astro';
+
+const { entry, sidebar } = Astro.locals.starlightRoute;
+
+/** The label of the sidebar group the current page is in. */
+function groupOf(entries: StarlightRouteData['sidebar'], group?: string): string | undefined {
+	for (const item of entries) {
+		if (item.type === 'link') {
+			if (item.isCurrent) return group;
+		} else {
+			const found = groupOf(item.entries, item.label);
+			if (found) return found;
+		}
+	}
+	return undefined;
+}
+
+const eyebrow = groupOf(sidebar);
+---
+
+<div class="sw-page-head">
+	{eyebrow && <p class="sw-page-head__eyebrow">{eyebrow}</p>}
+	<div class="sw-page-head__row">
+		<h1 id="_top">{entry.data.title}</h1>
+		{entry.id !== '404' && <PageActions />}
+	</div>
+	{entry.data.description && <p class="sw-page-head__lede">{entry.data.description}</p>}
+</div>

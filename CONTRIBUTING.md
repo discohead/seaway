@@ -10,6 +10,7 @@ typescript/    the TypeScript SDK (a port), its tests and examples
 conformance/   33 statements with the plans both SDKs must compile them to, and tables for the small things
 interop/       a check that the two SDKs can work on the same disk, each way round
 plugins/       a Claude Code plugin for working with seaway
+docs/          the documentation site; every example on it is run against both SDKs
 ```
 
 ## The rule
@@ -61,7 +62,7 @@ Things that catch people out:
 4. **Port the change** to the twin file in `typescript/src/`, with its test in `typescript/test/`.
 5. **Run the TypeScript tests and the typecheck.** The conformance test says, case by case, what does not match yet.
 6. **Run the interop check.** It prints `PROBLEMS: 0` when the two agree.
-7. **Update the prose** that states a number or a behaviour: the [README](README.md) gives test counts and lists known limits, this file gives the on-disk formats, and the plugin's skills document the API. The plugin's tests run every example in the skills, so they say which ones no longer hold.
+7. **Update the prose** that states a number or a behaviour: the [README](README.md) gives test counts and lists known limits, this file gives the on-disk formats, and the plugin's skills and the [docs](docs/README.md) document the API. The plugin's tests run every example in the skills, and the docs' checks run every example on the site, so they say which ones no longer hold.
 
 A change that only moves code around, in either SDK, needs its own SDK's tests and nothing else. A change to an on-disk format, an error code or a plan's shape is a change to both SDKs and to every disk already written: say so, and prefer adding to changing.
 
@@ -176,6 +177,19 @@ A fenced block marked `python` or `ts` in a skill is run as written, against bot
 
 The plugin also does this work with you. With it installed, Claude Code loads `seaway:contributing` when you edit either SDK, `/seaway:parity` runs both suites, the fixture and the interop check, and the `seaway:sdk-porter` agent ports a change from the Python to the TypeScript.
 
+## The docs
+
+`docs/` is the source of [discohead.github.io/seaway](https://discohead.github.io/seaway/). Its [README](docs/README.md) says how it is put together.
+
+```bash
+cd docs && npm install
+npm run check:examples       # run every example on the site, in Python and in TypeScript, on a local backend
+npm run check:api            # check every API name the pages mention against both SDKs
+npm run build                # build the site, then check every link in it
+```
+
+A fenced block marked `python` or `ts` on a page is run as written, the TypeScript is type-checked, and a block of output marked `output` is compared with what the Python printed. So the site cannot show an example that does not run. The checks need `npm ci` run once in `typescript/`, and a push to `main` runs them and publishes the site.
+
 ## What not to do
 
 - Do not edit `conformance/conformance.json`, or change the TypeScript to behave differently from the Python and leave it there.
@@ -186,6 +200,6 @@ The plugin also does this work with you. With it installed, Claude Code loads `s
 
 ## Sending a change
 
-Open an issue or a pull request at [github.com/discohead/seaway](https://github.com/discohead/seaway). Say what changed in behaviour, and whether it touches a plan, an error code or a file on disk. A pull request is ready when the Python tests, the TypeScript tests and typecheck, the interop check and the plugin's tests all pass, and the fixture's diff shows only what you meant.
+Open an issue or a pull request at [github.com/discohead/seaway](https://github.com/discohead/seaway). Say what changed in behaviour, and whether it touches a plan, an error code or a file on disk. A pull request is ready when the Python tests, the TypeScript tests and typecheck, the interop check, the plugin's tests and the docs' checks all pass, and the fixture's diff shows only what you meant.
 
 The repository does not carry a licence yet.

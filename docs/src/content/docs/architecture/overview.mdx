@@ -1,0 +1,90 @@
+---
+title: How seaway is built
+description: seaway is a thin layer with a small core. Contexts, statements, plans and turns compile down to a handful of operations that two backends provide, and everything it keeps is a plain file on a disk.
+sidebar:
+  label: Overview
+---
+
+import Layers from '../../../components/diagrams/Layers.astro';
+
+seaway is a thin layer. Its core is four things, and everything else is built from them. All of it compiles down to a handful of operations that Archil already provides.
+
+<Layers />
+
+- **Your code** calls seaway: an agent harness, a scheduled job, a script.
+- **seaway** is contexts, statements, plans and turns. Logs, views, feeds, recipes, tools for a model, the journal and the ledger are built from those.
+- **The backend interface** is the small set of operations all of it compiles to: `exec` with a mount map, parallel `grep`, object reads and writes, checkpoints and branches.
+- **Two backends** provide that interface. The local backend runs it on directories and local bash. The Archil backend sends it to Archil through the official SDK.
+
+## The principles
+
+**Everything compiles to something Archil already does.** A mode is a mount option. A turn is a checkpoint, a branch and a copy. A view is a listing compared with a fingerprint. There is no server component, and nothing seaway does needs a feature that is not there today.
+
+**The planner never guesses.** A command is split across calls only when the caller says which input to split and how to put the outputs back together. A call sees only the paths the statement declares. Where the SDK cannot know something, the plan says so.
+
+**Declaring is gradual.** A statement that declares nothing still runs, with the whole context mounted. Its plan says what it cost to be vague. Nothing has to be rewritten to start using seaway, and each declaration added buys a narrower scope and a better price.
+
+**Everything it keeps is a plain file.** The journal, a view's state, a feed's cursor and a manifest are files on the disk they concern. Either SDK can read what the other wrote, and so can an agent with only bash. The framework is really a set of [file conventions](/architecture/files-on-disk/), and the SDKs are two implementations of them.
+
+**Nothing runs between questions.** There is no daemon, no collector, no warm machine. A poll is a listing. A report rebuilds when it is read and its inputs have changed.
+
+**No runtime dependencies.** Neither SDK has any. The official clients are loaded only when the Archil backend is used.
+
+## The path of a statement
+
+1. `ctx.sh(...)` builds a `Statement`: an immutable value holding the template, the parameters and the VM. Nothing is contacted.
+2. `explain()` compiles it. The compiler lists the declared paths, works out the mount map, splits the input if the statement is mapped, and prices the result. That is the `Plan`.
+3. `run()` compiles again, checks the plan against any budget, and sends each task to the backend as one call: up to 64 at once.
+4. The outputs are reduced into a `Result`. What the statement cost goes to the context's ledger, and a line goes to the journal.
+
+[How planning works](/architecture/planning/) follows each step.
+
+## What a backend provides
+
+| Operation | Used for | On Archil |
+|---|---|---|
+| `exec(mounts, command, vm)` | every task of a plan; a turn's commit | one `exec` call, with a mount per disk |
+| `grep(disk, directory, pattern)` | `ctx.grep` | the disk's native parallel grep |
+| `get`, `put`, `delete` | `read`, `write`, `rm` | the S3-compatible object API |
+| `append` | `append`, and every log | the server-side append, at most 1 MiB |
+| `list`, `head` | `ls`, `exists`, and every listing behind a plan, a view, a feed or a turn | object listings: metadata only |
+| `checkpoint` | `checkpoint`, `lock`, `fork`, and the start of every turn | `archil checkpoints create`, run inside an exec |
+| `branch` | `fork`, a `frozen` mount, and every turn | the disk's `create_branch` |
+| `share` | `share` | a link that expires |
+
+A backend also says what its limits are, whether the caller is inside Archil (which decides whether a read is egress), and how coarse its file versions are. [Backends reference](/reference/backends/) has the interface.
+
+## Where things are
+
+The two SDKs have the same modules. Python is the reference, and TypeScript is a port of it.
+
+| Python | TypeScript | What |
+|---|---|---|
+| `context.py` | `context.ts` | mounts, modes, narrowing, the direct verbs, manifests, checkpoint, lock, fork |
+| `statement.py` | `statement.ts` | compiling `sh`, `sql`, `grep` and `batch` into plans; reducers; shards; results |
+| `plan.py` | `plan.ts` | the plan document, its hash and its printed form |
+| `shell.py` | `shell.ts` | paths, globs, quoting, templates. Tagged templates are TypeScript only |
+| `transaction.py` | `transaction.ts` | turns: begin, changes, commit, rollback |
+| `structures.py` | `structures.ts` | logs and selections, views, feeds |
+| `recipes.py` | `recipes.ts` | `Static`, `Records`, `sync`, `git`, `duckdb` |
+| `tools.py` | `tools.ts` | tools for a model. `asFileSystem` is TypeScript only |
+| `pricing.py` | `pricing.ts` | the price sheet, estimates, budgets, the ledger |
+| `errors.py` | `errors.ts` | the error classes |
+| `backends.py` | `backends.ts` | the backend interface, `MountSpec`, `Vm`, `Limits` |
+| `local.py` | `local.ts` | the local backend |
+| `archil_backend.py` | `archil-backend.ts` | the Archil backend, over the official SDK |
+| | `compat.ts` | what Python's built-ins do without being asked, written out |
+
+Read them in that order. The Python package is about 4,000 lines.
+
+## More
+
+:::cards
+- [How planning works](/architecture/planning/) From parameters to a mount map, shards, a price and a hash.
+- [How turns work](/architecture/transactions/) A checkpoint and a branch per disk, and a commit that validates before it copies.
+- [What the framework writes](/architecture/files-on-disk/) Every file format: the contract between the two SDKs.
+- [Versions and clocks](/architecture/versions/) How a view, a feed and a turn tell that a file changed.
+- [Two SDKs, one framework](/architecture/two-sdks/) The fixture and the interop check that keep them one.
+- [What it asks of the platform](/architecture/platform/) Six things the SDK works around today.
+- [Status and known limits](/architecture/status/) What runs, what was found on a live account, and what is not built.
+:::

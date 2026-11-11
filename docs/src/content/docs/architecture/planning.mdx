@@ -1,0 +1,141 @@
+---
+title: How planning works
+description: What happens between building a statement and sending a call. The compiler gathers the declared paths from a listing, works out the mount map, splits the input, renders the command, prices it, and names the result with a hash.
+---
+
+import StatementFlow from '../../../components/diagrams/StatementFlow.astro';
+
+A statement is compiled into a plan, and only then run. Compiling contacts the backend for listings and nothing else, which is why `explain()` is free on Archil.
+
+<StatementFlow />
+
+`explain()` compiles and stops there. `run()` compiles again, so that the plan reflects the files that exist at that moment, and then sends the calls.
+
+::example-context
+
+## 1. Gather
+
+The compiler walks the parameters. For each one that is a path it asks the backend for a listing, which is metadata only.
+
+| Parameter | Listed | Counted as a read of |
+|---|---|---|
+| `ctx.path(p)`, a file | that file | the file's directory |
+| `ctx.path(p)`, a directory | everything under it | the directory |
+| `ctx.glob(p)` | from the directory before the first wildcard, then filtered by the pattern | that directory |
+| a log selection | the days in range, then the partitions that cover it | the deepest directory that holds those partitions |
+| `ctx.out(p)` | nothing | a write |
+
+The sizes from those listings are the plan's `bytesTouched`. Listings are sorted by path before they are used, so a plan is the same on any backend, whatever order a directory comes back in.
+
+Anything that is not a path is a value. It is quoted when the command is rendered, and declares nothing.
+
+## 2. Scope
+
+The declared reads and writes become the smallest mount map that satisfies them.
+
+- **Nothing declared.** Every mount of the context, each in its own mode.
+- **A mount that is written.** Mounted whole, in its own mode: a checkout for `owned`, conditional for `shared`.
+- **A mount that is only read.** Mounted read-only, at the deepest directory that contains every path read on it.
+- **A mount that is not named.** Not mounted.
+
+A narrowed context adds one rule: a mount is never mounted above the directory it was narrowed to.
+
+Writes are not narrowed to a directory because a checkout is taken on the mount root. That is why a statement that writes gets its whole disk.
+
+## 3. Split
+
+Only a statement with `.map(...)` is split, and only on the parameter it names.
+
+1. The number of shards is the one given, or one per 256 MiB or per 2,000 files, whichever asks for more. It is never more than the number of files.
+2. Files are taken largest first, and each goes to the shard that is lightest so far. So shards end up of similar size.
+3. A shard whose file list would not fit in one command is split again.
+
+Each shard becomes one task: the same command, with that shard's files in place of the split parameter.
+
+```python
+docs = ctx.glob("docs/**/*.md")
+mapped = ctx.sh("cat {files} | wc -l", files=docs).map(reduce="sum", shards=2)
+for task in mapped.explain().tasks:
+    print(task.label, "|", task.command)
+```
+
+```ts
+const docs = ctx.glob("docs/**/*.md");
+const mapped = ctx.sh`cat ${docs} | wc -l`.map({ reduce: "sum", shards: 2 });
+for (const task of (await mapped.explain()).tasks) {
+  console.log(task.label, "|", task.command);
+}
+```
+
+```text output
+shard 0 | cat docs/security/keys.md | wc -l
+shard 1 | cat docs/expenses.md docs/onboarding.md | wc -l
+```
+
+The largest file went to the first shard, and the two smaller ones to the second.
+
+## 4. Render
+
+The template is rendered once per task.
+
+- A path becomes the path as the context writes it, quoted. A glob or a selection becomes each matching file, quoted, in path order.
+- A value becomes one shell word, or a SQL literal.
+- `archil.raw(text)` goes in as written.
+- A declared output's directory is created first, so `> {out}` works on a path that is new.
+- With `into(path)`, the command is wrapped so that its output goes to the file: `{ … } > 'path'`. A mapped statement writes one part per shard.
+
+Only `{name}` tokens whose name was passed as a parameter are substituted. Everything else in the template is left alone.
+
+A compiled command over 100 KiB is refused here, before anything is sent, with `command_too_large`.
+
+## 5. Price
+
+The estimate is worked out from the plan alone, as if nothing were warm.
+
+| Term | Is |
+|---|---|
+| calls | the number of tasks |
+| call units | calls, times the VM's multiple: the larger of its vCPU and memory multiples of the default, rounded up |
+| active data | every byte the statement reads, as newly active for one window |
+| complete | `false` when the statement declared nothing, so sizes are unknown |
+
+The [ledger](/guides/prices/#three-numbers-three-meanings) is different: it knows what the session has already made active, and charges only for what is new.
+
+## 6. Advise
+
+The compiler adds a note for anything a careful author would act on: nothing declared, an input that should be mapped, parallel writes into an `owned` mount, a VM that bills as several calls, a `grep` that `ctx.grep` would do in one call. [Read a plan](/guides/plans/#the-notes-a-plan-can-carry) lists them.
+
+## 7. Hash
+
+A plan's hash is the first 12 hex characters of the SHA-256 of `{kind, statement, vm, reduce, tasks}`, written as JSON with sorted keys and no spaces. Both SDKs hash the same form, so a statement written with named parameters gets the same hash from each.
+
+The hash covers what a plan does, and not what it costs. It survives a price change. For `sh`, it changes when the set of files a glob matches changes, because the command names each file. A `sql` task hands DuckDB the pattern, so its hash stays the same.
+
+## The other kinds
+
+**`sql`** compiles to one task. Each path parameter becomes a DuckDB table expression, with the reader chosen by the files' extension. A log selection also becomes a filter on `ts`. The query is handed to the engine as one quoted argument, and with `into()` it is wrapped in `COPY … TO`. A parameter that matches no files makes the plan empty: no task, no call, no rows.
+
+**`grep`** has a route of its own. It compiles to one task per disk searched, and the task is a description: the backend is handed the pattern and the options, not a command line.
+
+**`batch`** compiles each of its statements, takes the union of what they declare, and joins their commands into one. Each runs in a subshell with its output, its errors and its exit code kept apart, so the batch can hand back a result for each.
+
+## Run
+
+1. **Budget.** The plan's estimate is checked against the statement's own ceiling, and the estimate plus what was spent under the budget against the context's. Over either, `run()` raises and nothing is sent.
+2. **Tasks.** Each task is one call to the backend. The tasks of a mapped statement run at once, up to the backend's limit of 64. A `grep` over several disks makes its calls one after another.
+3. **Reduce.** For a mapped statement the reducer combines the outputs. Otherwise the output is the result.
+4. **Account.** The context's ledger records the calls and the bytes this statement newly made active. If the context has a journal, a line is written with the plan's hash, the template, the reads and writes, the cost and the exit code.
+
+The exit code of a statement with several tasks is the first one that is not zero.
+
+## What a server-side planner would change
+
+Today the SDK is both planner and executor, and it makes one HTTP call per task from wherever the caller happens to be. A plan is the document a planner on Archil's side would need: it already says what to mount, what to run and how to combine the results. [What it asks of the platform](/architecture/platform/) follows that through.
+
+## Next
+
+:::cards
+- [Read a plan](/guides/plans/) The printed plan, line by line.
+- [Statements and parameters](/guides/statements/) What each kind of parameter declares.
+- [Plan reference](/reference/plan/) The plan's fields and its JSON form.
+:::

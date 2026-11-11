@@ -1,0 +1,169 @@
+---
+title: The layer in front of exec
+description: seaway is a framework for Archil. Define the context an agent needs, then run statements against it that say what they touch, explain themselves before they run, and carry a price.
+template: splash
+hero:
+  title: The layer in front of <code>exec</code>
+  tagline: Define the context an agent needs. Then run statements against it that say what they touch, explain themselves before they run, and carry a price.
+  actions:
+    - text: Get started
+      link: /start/quickstart/
+      variant: primary
+    - text: Why seaway
+      link: /start/introduction/
+      variant: secondary
+---
+
+import HomeHero from '../../components/home/HomeHero.astro';
+import Meter from '../../components/home/Meter.astro';
+import Meters from '../../components/home/Meters.astro';
+import Section from '../../components/home/Section.astro';
+
+<HomeHero>
+
+```python
+ctx = archil.context({
+    "docs":   archil.disk("handbook"),               # read
+    "logs":   archil.disk("app-logs", "append"),     # only ever added to
+    "memory": archil.disk("agent-memory", "owned"),  # this agent's own
+    "team":   archil.disk("team-notes", "shared"),   # many writers
+}, backend=backend)
+
+errors = ctx.sql(
+    """select service, count(*)::int as errors
+       from {recent} where level = {level}
+       group by 1 order by 2 desc""",
+    recent=ctx.log("logs").last("15m"),   # a path: what the call may see
+    level="ERROR",                        # a value: always quoted
+)
+print(errors.explain())                   # nothing has run yet
+```
+
+```ts
+const ctx = await archil.context({
+  docs: archil.disk("handbook"),                 // read
+  logs: archil.disk("app-logs", "append"),       // only ever added to
+  memory: archil.disk("agent-memory", "owned"),  // this agent's own
+  team: archil.disk("team-notes", "shared"),     // many writers
+}, { backend });
+
+const errors = ctx.sql`
+  select service, count(*)::int as errors
+  from ${ctx.log("logs").last("15m")}
+  where level = ${"ERROR"}
+  group by 1 order by 2 desc`;
+
+console.log(String(await errors.explain()));  // nothing has run yet
+```
+
+```plan
+plan dae51292fe61  sql · 3 file(s), 1.9 KiB · 1 call
+  route   exec · 2 vCPU / 4 GiB
+  scope   logs/2026-11-11/08 → app-logs:/2026-11-11/08 (read-only)
+          not mounted: docs, memory, team
+  reads   logs[last 15m]
+  writes  —
+  price   1 call unit $0.00005 + 1.9 KiB active for an hour <$0.00001 ≈ $0.00005
+```
+
+</HomeHero>
+
+<Section eyebrow="The idea" title="Bash is the SQL. This is what goes in front of it." lede="Archil's exec runs a command next to your data in tens of milliseconds. That is the executor of a database, and a very good one. But a database gives you more than a place to run a query. It gives you everything in front of the executor, and that is the part you build on. seaway is that layer, and each piece of it compiles to something Archil already does.">
+
+| A database gives you | seaway gives you | Which on Archil is |
+|---|---|---|
+| A catalog | A [context](/guides/contexts/): disks composed under path names, each with a mutation strategy | A mount map: `readOnly`, `conditional`, checkouts, branches |
+| Bound parameters | A [statement](/guides/statements/): a path parameter declares what the command reads or writes, and a value is always quoted | The `disks` of an exec call, worked out for you |
+| `EXPLAIN` | A [plan](/guides/plans/): route, scope, split and price, before anything runs | A listing and the price sheet |
+| Transactions | A [turn](/guides/turns/): snapshot isolation over files, first committer wins | A checkpoint and a branch per written disk |
+| Materialised views | A [view](/guides/views/): a derived file that rebuilds only when its inputs changed | A listing compared with a fingerprint |
+| A cost model | A [price](/guides/prices/) on every plan, and budgets enforced before a call is made | Three meters: calls, active data, egress |
+
+</Section>
+
+<Section eyebrow="Four ideas" title="Say what you want. The rest follows." lede="In the example above, nobody chose the mount map or the price. The statement said which records it wanted. Four ideas make that work.">
+
+:::cards
+- [A context is a value](/guides/contexts/) Disks under path names, each with a mode that says who may change it. Narrow it for a helper, save it as a manifest, fork it for an attempt, lock it for a replay.
+- [A statement says what it touches](/guides/statements/) A path is a parameter, and so is every value. From that one declaration come the mount map, the price, what can be split, and what the journal records.
+- [A plan you can read](/guides/plans/) Ask a statement to explain itself and it returns the route, the scope, the split and the price. Nothing has run. A budget is checked against it.
+- [A turn is a transaction](/guides/turns/) A turn's changes land together or not at all. Two agents that change the same file don't overwrite each other: one commits, and the other runs its turn again.
+:::
+
+Three structures are built from the same verbs, and two more connect a context to the outside.
+
+:::cards
+- [Logs](/guides/logs/) Append-only records, a directory per hour and a file per writer. A question about fifteen minutes reads an hour or two, not the log.
+- [Views](/guides/views/) A derived file that rebuilds only when its inputs changed. Checking makes no call.
+- [Feeds](/guides/feeds/) What changed under a path since a reader last looked. An idle poll makes no call.
+- [Recipes](/guides/recipes/) A system of record, as files: an adapter with `list` and `get`, and a README for the layout.
+- [Tools for a model](/guides/model-tools/) A context as eight tools with JSON schemas. One of them prices a command before it runs.
+- [Blueprints](/blueprints/) Eight worked designs: agent memory, observability, mirrors, attempts, evals.
+:::
+
+</Section>
+
+<Section eyebrow="Priced" title="Shaped like the price sheet" lede="A statement can move three meters on Archil. A planner's job is to move them as little as it can, and because the meters are simple, the rules are few.">
+
+<Meters>
+<Meter name="Calls" rate="$0.05 per thousand">
+
+Reads, writes, appends and listings use no compute. A search is one call per disk. A batch runs many statements in one.
+
+</Meter>
+<Meter name="Active data" rate="$0.20 per GiB-month">
+
+A call mounts only the paths its statement names. A log selection reads only the hours in range.
+
+</Meter>
+<Meter name="Egress" rate="$0.07 per GB">
+
+The question goes to the data. A statement returns its result, and a large one stays on the disk.
+
+</Meter>
+</Meters>
+
+Every plan carries an estimate, so a ceiling is checked before anything runs: on one statement, or on everything a context does. Rates are Archil's public price sheet as read in November 2026. [Prices and budgets](/guides/prices/) has the arithmetic.
+
+</Section>
+
+<Section eyebrow="Try it" title="Runs today, with no account" lede="A local backend runs the same plans on plain directories with real bash. Code written against it runs on Archil unchanged.">
+
+```bash
+git clone https://github.com/discohead/seaway && cd seaway/python
+pip install -e '.[dev]'                 # Python 3.10+; brings pytest and the duckdb CLI
+python examples/quickstart.py           # context, statement, plan, turn, narrowing
+```
+
+```bash
+cd ../typescript && npm install         # Node 22.19+, which runs .ts directly
+node examples/quickstart.ts
+```
+
+:::cards
+- [Installation](/start/installation/) Both SDKs, and the two command-line tools the examples call.
+- [Quickstart](/start/quickstart/) A context, a statement, its plan, a turn and a narrowed helper, in ten minutes.
+- [Run on Archil](/guides/archil/) What changes when the same code is pointed at an account.
+:::
+
+</Section>
+
+<Section eyebrow="For agents" title="Docs a model can read" lede="seaway is new, so a model knows nothing about it, and without help it writes plausible code against an API that does not exist. These docs are built to be read by one.">
+
+:::cards
+- [llms.txt](/llms.txt) The index of every page, with one line on each. The whole site in one file is `llms-full.txt`.
+- [Every page as Markdown](/agents/llms/) Add `index.md` to any page's address, or use the Copy page menu at the top of it.
+- [Claude Code plugin](/agents/claude-code/) Skills for both SDKs, a linter, review and porting agents, and an MCP server that opens a context as tools.
+:::
+
+</Section>
+
+<Section eyebrow="Status" title="What is real" lede="seaway is an unofficial prototype of a proposal, packaged under its own name so it installs beside Archil's official SDKs, which it uses for every call.">
+
+- **It runs today.** Both SDKs pass their tests on a local backend, on Linux and on macOS.
+- **The two SDKs are one framework.** A shared fixture of 33 statements has to compile to identical plans, hashes and printed text in both languages. A second check has each SDK open a disk the other wrote.
+- **It has been run against Archil.** On 9 November 2026 both SDKs ran against a live account. Two of the backend's three assumptions held, and one did not.
+
+[Status and known limits](/architecture/status/) has the rest, including what is not built.
+
+</Section>

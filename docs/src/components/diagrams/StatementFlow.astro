@@ -1,0 +1,78 @@
+---
+/**
+ * How a statement becomes calls: compiled into a plan (which is all explain() does), then run.
+ * The page says the same thing in words below it.
+ */
+import './diagram.css';
+import { DIAGRAMS } from './descriptions.mjs';
+
+const { title, description } = DIAGRAMS.StatementFlow;
+
+const compile = [
+	{ title: 'Statement', sub: 'its parameters' },
+	{ title: 'Gather', sub: 'list the paths' },
+	{ title: 'Scope', sub: 'the mount map' },
+	{ title: 'Split', sub: 'shards, if mapped' },
+	{ title: 'Price', sub: 'the estimate' },
+	{ title: 'Plan', sub: 'hash, tasks, notes', accent: true },
+];
+const run = [
+	{ title: 'Check budget', sub: 'before sending' },
+	{ title: 'Run tasks', sub: 'one call per shard' },
+	{ title: 'Reduce', sub: 'combine outputs' },
+	{ title: 'Result', sub: 'text, rows, value', accent: true },
+];
+const x = (i: number) => 11 + i * 126;
+---
+
+<figure class="sw-figure not-content">
+	<svg viewBox="0 0 760 226" role="img" aria-labelledby="flow-title flow-desc">
+		<title id="flow-title">{title}</title>
+		<desc id="flow-desc">{description}</desc>
+
+		<text class="d-label" x="11" y="22">EXPLAIN() · COMPILING RUNS NOTHING: IT COSTS A LISTING</text>
+		{
+			compile.map((step, i) => (
+				<>
+					<rect class={step.accent ? 'd-accent' : 'd-box'} x={x(i)} y="36" width="108" height="52" rx="7" />
+					<text class="d-title" x={x(i) + 54} y="58" text-anchor="middle">
+						{step.title}
+					</text>
+					<text class="d-sub" x={x(i) + 54} y="75" text-anchor="middle">
+						{step.sub}
+					</text>
+					{i < compile.length - 1 && (
+						<>
+							<path class="d-line" d={`M${x(i) + 111} 62h6`} />
+							<path class="d-head" d={`M${x(i) + 124} 62l-7-4v8z`} />
+						</>
+					)}
+				</>
+			))
+		}
+
+		<path class="d-line d-line--accent" d="M695 88v14a8 8 0 0 1-8 8H73a8 8 0 0 0-8 8v22"></path>
+		<path class="d-head d-head--accent" d="M65 150l-4.5-8h9z"></path>
+		<text class="d-label" x="82" y="137">RUN() · COMPILES AGAIN, THEN SENDS</text>
+
+		{
+			run.map((step, i) => (
+				<>
+					<rect class={step.accent ? 'd-accent' : 'd-box'} x={x(i)} y="154" width="108" height="52" rx="7" />
+					<text class="d-title" x={x(i) + 54} y="176" text-anchor="middle">
+						{step.title}
+					</text>
+					<text class="d-sub" x={x(i) + 54} y="193" text-anchor="middle">
+						{step.sub}
+					</text>
+					<path class="d-line" d={`M${x(i) + 111} 180h6`} />
+					<path class="d-head" d={`M${x(i) + 124} 180l-7-4v8z`} />
+				</>
+			))
+		}
+		<rect class="d-chip" x={x(4)} y="154" width="234" height="52" rx="7"></rect>
+		<text class="d-title" x={x(4) + 117} y="176" text-anchor="middle">Ledger and journal</text>
+		<text class="d-sub" x={x(4) + 117} y="193" text-anchor="middle">what it cost, what it read and wrote</text>
+	</svg>
+	<figcaption>A statement is compiled into a plan, and only then run. <code>explain()</code> stops at the plan.</figcaption>
+</figure>

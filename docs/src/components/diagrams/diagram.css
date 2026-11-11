@@ -1,0 +1,86 @@
+/* Shared by the diagrams: every colour is one of the page's own, so they follow the theme. */
+.sw-figure .d-box {
+	fill: var(--sw-color-surface-raised);
+	stroke: var(--sl-color-gray-5);
+	stroke-width: 1;
+}
+.sw-figure .d-frame {
+	fill: color-mix(in srgb, var(--sl-color-accent) 5%, transparent);
+	stroke: color-mix(in srgb, var(--sl-color-accent) 45%, transparent);
+	stroke-width: 1;
+}
+.sw-figure .d-accent {
+	fill: color-mix(in srgb, var(--sl-color-accent) 14%, var(--sw-color-surface-raised));
+	stroke: var(--sl-color-accent);
+	stroke-width: 1;
+}
+.sw-figure .d-warn {
+	fill: color-mix(in srgb, var(--sw-color-price) 14%, var(--sw-color-surface-raised));
+	stroke: var(--sw-color-price);
+	stroke-width: 1;
+}
+.sw-figure .d-chip {
+	fill: var(--sw-color-surface);
+	stroke: var(--sl-color-hairline-light);
+	stroke-width: 1;
+}
+.sw-figure .d-line {
+	fill: none;
+	stroke: var(--sl-color-gray-4);
+	stroke-width: 1.5;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+.sw-figure .d-line--accent {
+	stroke: var(--sl-color-accent);
+}
+.sw-figure .d-line--dash {
+	stroke-dasharray: 4 5;
+}
+.sw-figure .d-head {
+	fill: var(--sl-color-gray-4);
+}
+.sw-figure .d-head--accent {
+	fill: var(--sl-color-accent);
+}
+.sw-figure .d-dot {
+	fill: var(--sl-color-black);
+	stroke: var(--sl-color-gray-3);
+	stroke-width: 1.5;
+}
+.sw-figure .d-dot--accent {
+	fill: var(--sl-color-accent);
+	stroke: var(--sl-color-accent);
+}
+.sw-figure .d-dot--warn {
+	fill: var(--sw-color-price);
+	stroke: var(--sw-color-price);
+}
+.sw-figure .d-title {
+	fill: var(--sl-color-white);
+	font-size: 13.5px;
+	font-weight: 600;
+	letter-spacing: -0.01em;
+}
+.sw-figure .d-text {
+	fill: var(--sl-color-gray-2);
+	font-size: 12px;
+}
+.sw-figure .d-sub {
+	fill: var(--sl-color-gray-3);
+	font-size: 11.5px;
+}
+.sw-figure .d-mono {
+	fill: var(--sl-color-gray-2);
+	font-family: var(--__sl-font-mono);
+	font-size: 11.5px;
+}
+.sw-figure .d-label {
+	fill: var(--sl-color-text-accent);
+	font-size: 10.5px;
+	font-weight: 600;
+	letter-spacing: 0.09em;
+}
+.sw-figure .d-label--muted {
+	fill: var(--sl-color-gray-3);
+}

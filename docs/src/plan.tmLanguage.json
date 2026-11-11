@@ -1,0 +1,42 @@
+{
+	"name": "plan",
+	"scopeName": "text.seaway.plan",
+	"patterns": [
+		{
+			"match": "^(plan)\\s+([0-9a-f]{12})\\s+(sh|sql|grep|batch)\\b",
+			"captures": {
+				"1": { "name": "comment.line.plan" },
+				"2": { "name": "constant.numeric.hash.plan" },
+				"3": { "name": "entity.name.function.kind.plan" }
+			}
+		},
+		{
+			"match": "^\\s{2}(route|scope|reads|writes|price|note)\\b",
+			"captures": { "1": { "name": "keyword.other.label.plan" } }
+		},
+		{
+			"match": "\\(read-only\\)",
+			"name": "entity.name.type.read-only.plan"
+		},
+		{
+			"match": "\\(read-write, (?:checkout [^)]*|conditional)\\)",
+			"name": "string.unquoted.read-write.plan"
+		},
+		{
+			"match": "\\((?:input size unknown|not declared)\\)",
+			"name": "string.unquoted.unknown.plan"
+		},
+		{
+			"match": "\\bnot mounted:.*$",
+			"name": "comment.line.unmounted.plan"
+		},
+		{
+			"match": "<?\\$[0-9]+(?:\\.[0-9]+)?",
+			"name": "variable.other.price.plan"
+		},
+		{
+			"match": "→|≈|·|—",
+			"name": "comment.line.separator.plan"
+		}
+	]
+}

@@ -1,0 +1,81 @@
+---
+/**
+ * The layers of seaway: your code, the framework, the backend interface, and the two backends.
+ * Drawn in the page's own colours. The page says the same thing in words just below it, which is
+ * what a page's Markdown twin carries.
+ */
+import './diagram.css';
+import { DIAGRAMS } from './descriptions.mjs';
+
+const { title, description } = DIAGRAMS.Layers;
+
+const parts = [
+	{ title: 'Context', sub: 'disks, modes, narrowing' },
+	{ title: 'Statement', sub: 'sh · sql · grep · batch' },
+	{ title: 'Plan', sub: 'route, scope, split, price' },
+	{ title: 'Turn', sub: 'checkpoint, branch, commit' },
+];
+const built = ['Log', 'View', 'Feed', 'Recipe', 'Tools', 'Journal', 'Ledger'];
+const chip = { width: 88, gap: (696 - 7 * 88) / 6 };
+---
+
+<figure class="sw-figure not-content">
+	<svg viewBox="0 0 760 404" role="img" aria-labelledby="layers-title layers-desc">
+		<title id="layers-title">{title}</title>
+		<desc id="layers-desc">{description}</desc>
+
+		<rect class="d-box" x="16" y="12" width="728" height="52" rx="8"></rect>
+		<text class="d-title" x="380" y="35" text-anchor="middle">Your code</text>
+		<text class="d-sub" x="380" y="52" text-anchor="middle">an agent harness, a scheduled job, a script</text>
+
+		<path class="d-line" d="M380 64v16"></path>
+		<path class="d-head" d="M380 88l-4.5-8h9z"></path>
+
+		<rect class="d-frame" x="16" y="92" width="728" height="140" rx="10"></rect>
+		<text class="d-label" x="32" y="113">SEAWAY</text>
+		{
+			parts.map((part, i) => (
+				<>
+					<rect class="d-accent" x={32 + i * 176} y="124" width="168" height="50" rx="7" />
+					<text class="d-title" x={32 + i * 176 + 84} y="145" text-anchor="middle">
+						{part.title}
+					</text>
+					<text class="d-sub" x={32 + i * 176 + 84} y="162" text-anchor="middle">
+						{part.sub}
+					</text>
+				</>
+			))
+		}
+		{
+			built.map((name, i) => (
+				<>
+					<rect class="d-chip" x={32 + i * (chip.width + chip.gap)} y="188" width={chip.width} height="28" rx="14" />
+					<text class="d-text" x={32 + i * (chip.width + chip.gap) + chip.width / 2} y="206" text-anchor="middle">
+						{name}
+					</text>
+				</>
+			))
+		}
+
+		<path class="d-line" d="M380 232v16"></path>
+		<path class="d-head" d="M380 256l-4.5-8h9z"></path>
+
+		<rect class="d-box" x="16" y="260" width="728" height="52" rx="8"></rect>
+		<text class="d-label d-label--muted" x="32" y="281">THE BACKEND INTERFACE</text>
+		<text class="d-mono" x="32" y="300">exec with a mount map · grep · get, put, append, list · checkpoint · branch</text>
+
+		<path class="d-line" d="M192 312v16"></path>
+		<path class="d-head" d="M192 336l-4.5-8h9z"></path>
+		<path class="d-line" d="M568 312v16"></path>
+		<path class="d-head" d="M568 336l-4.5-8h9z"></path>
+
+		<rect class="d-box" x="16" y="340" width="352" height="52" rx="8"></rect>
+		<text class="d-title" x="192" y="363" text-anchor="middle">Local backend</text>
+		<text class="d-sub" x="192" y="380" text-anchor="middle">directories and local bash; no account</text>
+
+		<rect class="d-box" x="392" y="340" width="352" height="52" rx="8"></rect>
+		<text class="d-title" x="568" y="363" text-anchor="middle">Archil backend</text>
+		<text class="d-sub" x="568" y="380" text-anchor="middle">the official SDK: archil on PyPI, disk on npm</text>
+	</svg>
+	<figcaption>Everything the framework does compiles down to a small set of operations that two backends provide.</figcaption>
+</figure>
