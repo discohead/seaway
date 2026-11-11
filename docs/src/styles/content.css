@@ -150,8 +150,13 @@
 }
 
 
-/* On a narrow screen the column that explains stays wide enough to read. */
+/* On a narrow screen a column of prose keeps a few words to a line, and the one that explains
+   stays wide enough to read. The table scrolls sideways instead of stacking a word per line. */
 @media (max-width: 50rem) {
+	.sl-markdown-content td:not(:where(.not-content *)):not(:first-child) {
+		min-width: 7rem;
+	}
+
 	.sl-markdown-content td:not(:where(.not-content *)):last-child:not(:first-child) {
 		min-width: 13rem;
 	}
