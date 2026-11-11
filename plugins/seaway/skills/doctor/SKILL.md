@@ -29,4 +29,4 @@ Give the user the state of things in order of what would stop them, not in the r
 3. **What the local backend enforces here.** With symlink mounts: a write to a read-only mount is reported after the command, not refused; a network policy is not enforced; `find` and `du` need `-L`. Archil enforces all three, so a test that passes locally can still be refused there.
 4. **Nothing to fix:** say that, in one line.
 
-Do not install anything unless the user asks. When they do, say what the command will change first. If the plugin's MCP server is in use, `describe_context` shows which SDK it loaded and what is open.
+Do not install anything unless the user asks. When they do, say what the command will change first. `/seaway:setup` does the fixing: it finds or clones a checkout, points the plugin at it, and offers the rest. If the plugin's MCP server is in use, `describe_context` shows which SDK it loaded and what is open.

@@ -99,8 +99,8 @@ test("what should run can be run", () => {
 
 // -- skills and agents -----------------------------------------------------------------
 
-test("the skills are the eleven the README lists", () => {
-  assert.deepEqual(skills, ["contributing", "cost", "design", "doctor", "explain", "new", "open", "parity", "port", "review", "sdk"]);
+test("the skills are the twelve the README lists", () => {
+  assert.deepEqual(skills, ["contributing", "cost", "design", "doctor", "explain", "new", "open", "parity", "port", "review", "sdk", "setup"]);
   const readme = read("README.md");
   for (const name of skills) assert.ok(readme.includes(`seaway:${name}`), `the README does not mention seaway:${name}`);
 });
@@ -116,7 +116,7 @@ for (const name of skills) {
     assert.ok((fields.description + (fields.when_to_use ?? "")).length <= 1536);
     assert.ok(text.split("\n").length <= 500, "keep SKILL.md under 500 lines; the long form goes in references/");
     assert.doesNotMatch(body, /\bTODO\b/);
-    const called = ["new", "explain", "doctor", "review", "port", "parity", "cost", "open"].includes(name);
+    const called = ["setup", "new", "explain", "doctor", "review", "port", "parity", "cost", "open"].includes(name);
     assert.equal(fields["disable-model-invocation"], called ? "true" : undefined, "skills you call are not offered to the model, and the others are");
     if (!called) assert.ok(fields.when_to_use, "a skill Claude uses by itself says when");
   });
@@ -134,7 +134,7 @@ test("a skill that injects a command's output is allowed to run it, and the plug
       assert.ok(existsSync(path.join(PLUGIN, "bin", program)), `${name}: ${program} is not in the plugin's bin/`);
     }
   }
-  assert.equal(injections, 3);
+  assert.equal(injections, 4);
 });
 
 test("the agents are the four the README lists, each with a name and a description", () => {

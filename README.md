@@ -368,11 +368,11 @@ This is as far as the idea goes from the client. Each of these is something the 
 seaway is new, so a model knows nothing about it, and without help it writes plausible code against an API that does not exist. `plugins/seaway` is a plugin for Claude Code that gives it the real one to read first: skills for both SDKs, a linter for the mistakes that are easy to make, agents that review and port, and an MCP server that opens a context as tools, with plans and prices.
 
 ```bash
-claude plugin marketplace add /path/to/this/checkout
+claude plugin marketplace add discohead/seaway
 claude plugin install seaway@seaway
 ```
 
-Its [README](plugins/seaway/README.md) says what is in it. Every example in its skills is run against both SDKs by the plugin's tests.
+Then run `/seaway:setup` in a session. The MCP server loads the TypeScript SDK from a checkout of this repository, and setup finds one or clones it and points the plugin there. Its [README](plugins/seaway/README.md) says what is in it. Every example in its skills is run against both SDKs by the plugin's tests.
 
 ## Where to go next
 

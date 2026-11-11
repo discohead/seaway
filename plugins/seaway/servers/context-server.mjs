@@ -169,6 +169,7 @@ function nodeIsOldEnough() {
 
 const HOW_TO_POINT = [
   "Point the plugin at the SDK in one of these ways:",
+  "  - run /seaway:setup, which finds a checkout or clones one and sets the option for you;",
   "  - run Claude Code from inside a seaway checkout (the SDK is found at typescript/src/index.ts);",
   "  - set the plugin's \"seaway checkout\" option (claude plugin configure seaway), or SEAWAY_SDK, to a checkout;",
   "  - install it into the project as a link: npm install /path/to/seaway/typescript.",

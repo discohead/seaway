@@ -6,20 +6,28 @@ seaway is new, so nothing about it is in a model's training data. Without help, 
 
 ## Install
 
-From a checkout of this repository:
+From GitHub:
 
 ```bash
-claude plugin marketplace add /path/to/seaway
+claude plugin marketplace add discohead/seaway
 claude plugin install seaway@seaway
 ```
 
-Or load it for one session, without installing:
+From a checkout of this repository, give its path in place of the name (`claude plugin marketplace add /path/to/seaway`). Or load the plugin for one session, without installing:
 
 ```bash
 claude --plugin-dir /path/to/seaway/plugins/seaway
 ```
 
 The skills and agents need nothing else. The scripts, the hooks and the MCP server need Node on the PATH, and the MCP server needs Node 22.19 or later, the same as the TypeScript SDK. Without Node the hooks do nothing and say nothing.
+
+The MCP server also needs the TypeScript SDK on disk, and the installed plugin does not carry it. In a session, run:
+
+```text
+/seaway:setup
+```
+
+It finds a checkout of this repository, or clones one where you say, sets the plugin's "seaway checkout" option to it, and offers to install what else is missing, such as DuckDB. To do it by hand, clone the repository and set the option with `claude plugin configure seaway`, or work in a project inside a checkout. [The MCP server](#the-mcp-server) says where it looks. Until it finds the SDK the server still starts, and each tool says how to point it at one.
 
 ## What is in it
 
@@ -37,6 +45,7 @@ Every example in the skills is run by the plugin's tests against both SDKs.
 
 | Command | What it does |
 |---|---|
+| `/seaway:setup [checkout]` | after installing: finds a checkout of this repository or clones one, points the MCP server at it, and offers to install what else is missing |
 | `/seaway:new [name] [python\|typescript]` | scaffolds a project: a context, a first script, a README. Runs it on a local backend |
 | `/seaway:design [what to build]` | designs the context and the layout for it |
 | `/seaway:explain [file:line or statement]` | shows a statement's plan and price without running it, and what each note means |
@@ -153,7 +162,7 @@ The server also reads `SEAWAY_MCP_EGRESS` (`deny`, `allow`, or hosts separated b
 
 ```text
 .claude-plugin/plugin.json    the manifest, and the options above
-skills/                       eleven skills; sdk/references and design/references hold the long form
+skills/                       twelve skills; sdk/references and design/references hold the long form
 agents/                       four agents
 hooks/hooks.json, run.sh      four hooks, all through one wrapper that does nothing without Node
 scripts/                      hook.mjs, lint.mjs, doctor.mjs, and lib/ they share
@@ -188,7 +197,7 @@ Every run is a real model call on your account. `--no-publish` keeps the report 
 
 ## What it does not do
 
-- It does not install seaway, Python, Node, DuckDB or the official Archil SDKs. `seaway-doctor` says what is missing and how to get it.
+- It does not install anything by itself. `seaway-doctor` says what is missing, and `/seaway:setup` offers to get it: a checkout, DuckDB, jq, the SDK in a project. It asks first, and leaves Python, Node and the official Archil SDKs to you.
 - The MCP server runs on the TypeScript SDK only. A project that uses only the Python SDK still gets the skills, the agents, the linter and the hooks.
 - The linter does not parse. It misses what is spread across variables, and it cannot tell that a path given as a plain string should have been `ctx.path`. That is what the reviewer agent is for.
 - The MCP server does not sync recipes, fork or lock a context. Those need code, or are permanent on Archil, and are left to a program.

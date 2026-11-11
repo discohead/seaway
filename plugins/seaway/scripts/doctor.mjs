@@ -155,7 +155,7 @@ export function render(r) {
 
   const n = r.node;
   const nodeOk = n.ok ? "ok" : "TOO OLD: the TypeScript SDK and this plugin's MCP server need 22.19 or later";
-  const sdk = n.sdk ? `TypeScript SDK at ${n.sdk}` : "TypeScript SDK NOT FOUND from here (the MCP server looks in the project and above it; or set the plugin's \"seaway checkout\" option)";
+  const sdk = n.sdk ? `TypeScript SDK at ${n.sdk}` : "TypeScript SDK NOT FOUND from here (the MCP server looks in the project and above it; or set the plugin's \"seaway checkout\" option, which /seaway:setup does)";
   const disk = n.sdk ? (n.official ? " disk (the official SDK) is installed." : " disk (the official SDK) is not installed, and is needed only to reach Archil: npm install.") : "";
   row("node", `${n.version}, ${nodeOk}. ${sdk}.${disk}`);
 
